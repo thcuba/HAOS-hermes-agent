@@ -53,11 +53,12 @@ ENV PATH="/opt/hermes/.venv/bin:${PATH}"
 COPY hassio/hermes/run.sh /
 RUN chmod a+x /run.sh
 
+ARG BUILD_ARCH
 LABEL \
     io.hass.name="Hermes Agent" \
     io.hass.description="The self-improving AI agent by Nous Research" \
     io.hass.arch="${BUILD_ARCH}" \
-    io.hass.type="addon" \
+    io.hass.type="app" \
     io.hass.version="0.13.0"
 
 CMD [ "/run.sh" ]
