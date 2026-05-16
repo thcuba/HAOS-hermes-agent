@@ -5,7 +5,8 @@ FROM ${BUILD_FROM}
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential curl nodejs npm python3-pip python3-dev \
-    ripgrep ffmpeg gcc libffi-dev procps git openssh-client docker-cli tini && \
+    ripgrep ffmpeg gcc libffi-dev procps git openssh-client docker-cli tini \
+    nginx && \
     rm -rf /var/lib/apt/lists/*
 
 # Install uv

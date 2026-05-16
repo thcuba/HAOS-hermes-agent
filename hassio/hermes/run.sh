@@ -42,6 +42,64 @@ fi
 # Sync skills
 python3 "$INSTALL_DIR/tools/skills_sync.py"
 
+# Apply dashboard compatibility patches if needed
+if [ "$HERMES_DASHBOARD" = "true" ]; then
+    PATCH_STATUS_FILE="$(mktemp)"
+    if ! python3 "$INSTALL_DIR/hassio/hermes/dashboard-patches.py" "$INSTALL_DIR" "$PATCH_STATUS_FILE"; then
+        bashio::log.warn "Dashboard compatibility patch failed - continuing startup"
+    fi
+
+    # Check for legacy build marker and existing dist
+    DASHBOARD_REBUILD="false"
+    if [ -s "$PATCH_STATUS_FILE" ]; then
+        DASHBOARD_REBUILD="true"
+    fi
+    if [ ! -d "$INSTALL_DIR/hermes_cli/web_dist/assets" ]; then
+         DASHBOARD_REBUILD="true"
+    fi
+
+    if [ "$DASHBOARD_REBUILD" = "true" ]; then
+        bashio::log.info "Dashboard assets missing or patched; rebuilding..."
+        (cd "$INSTALL_DIR/web" && npm run build)
+    fi
+    rm -f "$PATCH_STATUS_FILE"
+
+    # Start the dashboard in the background
+    bashio::log.info "Launching Hermes Dashboard..."
+    hermes dashboard --port 9119 --host 127.0.0.1 --no-open --skip-build &
+    DASHBOARD_PID=$!
+
+    # Wait for dashboard to start and obtain its session token
+    DASHBOARD_TOKEN=""
+    bashio::log.info "Waiting for dashboard token..."
+    for i in $(seq 1 15); do
+        DASHBOARD_TOKEN=$(curl -s "http://127.0.0.1:9119/" 2>/dev/null | grep -oP '__HERMES_SESSION_TOKEN__="\K[^"]+' || true)
+        if [ -n "$DASHBOARD_TOKEN" ]; then
+            break
+        fi
+        sleep 2
+    done
+
+    if [ -z "$DASHBOARD_TOKEN" ]; then
+        bashio::log.warn "Could not read dashboard token (Ingress auth may fail)"
+        DASHBOARD_TOKEN="UNAVAILABLE"
+    fi
+    bashio::log.info "Dashboard token obtained (${#DASHBOARD_TOKEN} chars)"
+fi
+
+# Start Nginx if Ingress is enabled
+if bashio::config.has_value 'ingress_port'; then
+    INGRESS_PORT=$(bashio::config 'ingress_port')
+    bashio::log.info "Configuring Nginx for Ingress on port $INGRESS_PORT"
+
+    cp "$INSTALL_DIR/hassio/hermes/nginx.conf.tpl" /etc/nginx/nginx.conf
+    sed -i "s/%%INGRESS_PORT%%/$INGRESS_PORT/g" /etc/nginx/nginx.conf
+    sed -i "s/%%DASHBOARD_TOKEN%%/$DASHBOARD_TOKEN/g" /etc/nginx/nginx.conf
+
+    mkdir -p /run/nginx
+    nginx
+fi
+
 # Start the gateway
 bashio::log.info "Launching Hermes Gateway..."
 exec hermes gateway

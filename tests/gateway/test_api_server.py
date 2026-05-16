@@ -2440,8 +2440,8 @@ class TestUsageCounting:
 
             assert resp.status == 200
             data = await resp.json()
-            assert data["usage"]["prompt_tokens"] == 100
-            assert data["usage"]["completion_tokens"] == 50
+            assert data["usage"]["input_tokens"] == 100
+            assert data["usage"]["output_tokens"] == 50
             assert data["usage"]["total_tokens"] == 150
 
     @pytest.mark.asyncio
