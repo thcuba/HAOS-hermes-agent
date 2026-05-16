@@ -403,7 +403,7 @@ install_uv() {
     if ! curl -LsSf https://astral.sh/uv/install.sh -o "$_uv_installer" 2>"$_uv_install_log"; then
         log_error "Failed to download uv installer from https://astral.sh/uv/install.sh"
         log_info "curl output:"
-        sed 's/^/    /' "$_uv_install_log" >&2
+        sed 's#^#    #' "$_uv_install_log" >&2
         log_info "Install manually: https://docs.astral.sh/uv/getting-started/installation/"
         rm -f "$_uv_install_log" "$_uv_installer"
         exit 1
@@ -420,7 +420,7 @@ install_uv() {
         else
             log_error "uv installer reported success but binary not found on PATH"
             log_info "Installer output:"
-            sed 's/^/    /' "$_uv_install_log" >&2
+            sed 's#^#    #' "$_uv_install_log" >&2
             log_info "Try adding ~/.local/bin to your PATH and re-running"
             rm -f "$_uv_install_log"
             exit 1
@@ -431,7 +431,7 @@ install_uv() {
     else
         log_error "Failed to install uv"
         log_info "Installer output:"
-        sed 's/^/    /' "$_uv_install_log" >&2
+        sed 's#^#    #' "$_uv_install_log" >&2
         log_info "Install manually: https://docs.astral.sh/uv/getting-started/installation/"
         rm -f "$_uv_install_log" "$_uv_installer"
         exit 1
@@ -1229,7 +1229,7 @@ PY
             return 0
         fi
         log_warn "Tier '$name' failed. Top of pip output:"
-        head -5 "$ALL_INSTALL_LOG" | sed 's/^/    /' >&2
+        head -5 "$ALL_INSTALL_LOG" | sed 's#^#    #' >&2
         return 1
     }
 
