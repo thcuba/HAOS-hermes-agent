@@ -34,7 +34,7 @@
         runHook prePatch
         # Normalize trailing newlines so source and npm-deps always match,
         # regardless of what fetchNpmDeps preserves.
-        sed -i -z 's/\n*$/\n/' package-lock.json
+        sed -i -z 's#\n*$#\n#' package-lock.json
 
         # Make npmConfigHook's byte-for-byte diff newline-agnostic by
         # replacing its hardcoded /nix/store/.../diff with a wrapper that
@@ -42,8 +42,8 @@
         mkdir -p "$TMPDIR/bin"
         cat > "$TMPDIR/bin/diff" << DIFFWRAP
         #!/bin/sh
-        f1=\$(mktemp) && sed -z 's/\n*$/\n/' "\$1" > "\$f1"
-        f2=\$(mktemp) && sed -z 's/\n*$/\n/' "\$2" > "\$f2"
+        f1=\$(mktemp) && sed -z 's#\n*$#\n#' "\$1" > "\$f1"
+        f2=\$(mktemp) && sed -z 's#\n*$#\n#' "\$2" > "\$f2"
         ${pkgs.diffutils}/bin/diff "\$f1" "\$f2" && rc=0 || rc=\$?
         rm -f "\$f1" "\$f2"
         exit \$rc
@@ -67,11 +67,11 @@
           ${pkgs.lib.getExe npm-lockfile-fix} ./package-lock.json
 
           NIX_FILE="$REPO_ROOT/${nixFile}"
-          sed -i "s/hash = \"[^\"]*\";/hash = \"\";/" $NIX_FILE
+          sed -i "s#hash = \"[^\"]*\";#hash = \"\";#" $NIX_FILE
           NIX_OUTPUT=$(nix build .#${attr} 2>&1 || true)
           NEW_HASH=$(echo "$NIX_OUTPUT" | grep 'got:' | awk '{print $2}')
           echo got new hash $NEW_HASH
-          sed -i "s|hash = \"[^\"]*\";|hash = \"$NEW_HASH\";|" $NIX_FILE
+          sed -i "s#hash = \"[^\"]*\";#hash = \"$NEW_HASH\";#" $NIX_FILE
           nix build .#${attr}
           echo "Updated npm hash in $NIX_FILE to $NEW_HASH"
         '')
@@ -95,7 +95,7 @@
             echo "${pname}: prefetching npm deps..."
             NIX_FILE="$REPO_ROOT/${nixFile}"
             if NEW_HASH=$(${pkgs.lib.getExe pkgs.prefetch-npm-deps} "${folder}/package-lock.json" 2>/dev/null); then
-              sed -i "s|hash = \"sha256-[A-Za-z0-9+/=]+\"|hash = \"$NEW_HASH\";|" "$NIX_FILE"
+              sed -i "s#hash = \"sha256-[A-Za-z0-9+/=]+\"#hash = \"$NEW_HASH\";#" "$NIX_FILE"
               echo "${pname}: updated hash to $NEW_HASH"
             else
               echo "${pname}: warning: prefetch failed, run 'nix run .#fix-lockfiles' manually" >&2
@@ -191,7 +191,7 @@
         fi
 
         OLD_HASH=$(grep -oE 'hash = "sha256-[^"]+"' "$NIX_FILE" | head -1 \
-          | sed -E 's/hash = "(.*)"/\1/')
+          | sed -E 's#hash = "(.*)"#\1#')
 
         if [ "$NEW_HASH" = "$OLD_HASH" ]; then
           echo "    ok"
@@ -211,7 +211,7 @@
         fi
 
         if [ "$MODE" = "--apply" ]; then
-          sed -i "s|hash = \"sha256-[^\"]*\";|hash = \"$NEW_HASH\";|" "$NIX_FILE"
+          sed -i "s#hash = \"sha256-[^\"]*\";#hash = \"$NEW_HASH\";#" "$NIX_FILE"
           if ! nix build ".#$ATTR.npmDeps" --no-link --print-build-logs; then
             echo "    verification build failed after hash update" >&2
             exit 1
