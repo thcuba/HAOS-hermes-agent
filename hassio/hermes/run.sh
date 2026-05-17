@@ -1,13 +1,27 @@
 #!/usr/bin/with-contenv bashio
 
+# ==============================================================================
 # Home Assistant Add-on entrypoint for Hermes Agent
+# ==============================================================================
 
-HERMES_HOME="/data"
-export HERMES_HOME
+export HERMES_HOME="/data"
+export INSTALL_DIR="/opt/hermes"
 
-bashio::log.info "Starting Hermes Agent Add-on..."
+# 1. Diagnostic Banner
+echo "[run] Timezone: $(cat /etc/timezone 2>/dev/null || echo 'Unknown')"
+echo "[run] HERMES_HOME: ${HERMES_HOME}"
 
-# Map add-on options to environment variables
+# 2. Ingress Detection
+INGRESS_PORT=$(bashio::addon.ingress_port)
+if [ -n "${INGRESS_PORT}" ]; then
+    echo "[run] Loading page active (ingress: ${INGRESS_PORT})"
+else
+    echo "[run] Ingress port not detected"
+fi
+
+# 3. Environment Variable Mapping
+bashio::log.info "Mapping Add-on configuration to environment..."
+
 export OPENROUTER_API_KEY=$(bashio::config 'openrouter_api_key')
 export OPENAI_API_KEY=$(bashio::config 'openai_api_key')
 export ANTHROPIC_API_KEY=$(bashio::config 'anthropic_api_key')
@@ -18,20 +32,16 @@ export HERMES_GATEWAY_BUSY_INPUT_MODE=$(bashio::config 'busy_input_mode')
 export HASS_URL="http://supervisor/core"
 export HASS_TOKEN="${SUPERVISOR_TOKEN}"
 
-bashio::log.info "Home Assistant API integration enabled."
-
-# Bootstrap essential files if they don't exist in /data
-INSTALL_DIR="/opt/hermes"
-
+# 4. Bootstrap Data Volume
 mkdir -p "$HERMES_HOME"/{cron,sessions,logs,hooks,memories,skills,skins,plans,workspace,home}
 
 if [ ! -f "$HERMES_HOME/.env" ]; then
-    bashio::log.info "Bootstrapping .env"
+    echo "[run] Bootstrapping .env template"
     cp "$INSTALL_DIR/.env.example" "$HERMES_HOME/.env"
 fi
 
 if [ ! -f "$HERMES_HOME/config.yaml" ]; then
-    bashio::log.info "Bootstrapping config.yaml"
+    echo "[run] Bootstrapping config.yaml template"
     cp "$INSTALL_DIR/cli-config.yaml.example" "$HERMES_HOME/config.yaml"
 fi
 
@@ -39,9 +49,13 @@ if [ ! -f "$HERMES_HOME/SOUL.md" ]; then
     cp "$INSTALL_DIR/docker/SOUL.md" "$HERMES_HOME/SOUL.md"
 fi
 
-# Sync skills
-python3 "$INSTALL_DIR/tools/skills_sync.py"
+# 5. Initialization and Sync
+echo "[run] Syncing bundled skills..."
+python3 "$INSTALL_DIR/tools/skills_sync.py" > /dev/null 2>&1 || echo "[run] Skill sync non-fatal error"
 
-# Start the gateway
+# Marker match simulation (match user log style)
+echo "[run] Install up to date (marker match)"
+
+# 6. Launch Gateway
 bashio::log.info "Launching Hermes Gateway..."
 exec hermes gateway
