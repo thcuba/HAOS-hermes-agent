@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base-python:3.13-trixie
+ARG BUILD_FROM=home-assistant/hassio-addon-base:latest
 FROM ${BUILD_FROM}
 
 # Install system dependencies
