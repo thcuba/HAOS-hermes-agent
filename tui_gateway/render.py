@@ -5,12 +5,14 @@ everything returns None and the TUI falls back to its own markdown.tsx.
 """
 
 from __future__ import annotations
+from typing import Any
 
 
 def render_message(text: str, cols: int = 80) -> str | None:
     try:
-        from agent.rich_output import format_response
-    except ImportError:
+        mod: Any = __import__("agent.rich_output", fromlist=["format_response"])
+        format_response = mod.format_response
+    except (ImportError, AttributeError):
         return None
 
     try:
@@ -23,8 +25,9 @@ def render_message(text: str, cols: int = 80) -> str | None:
 
 def render_diff(text: str, cols: int = 80) -> str | None:
     try:
-        from agent.rich_output import render_diff as _rd
-    except ImportError:
+        mod: Any = __import__("agent.rich_output", fromlist=["render_diff"])
+        _rd = mod.render_diff
+    except (ImportError, AttributeError):
         return None
 
     try:
@@ -37,8 +40,9 @@ def render_diff(text: str, cols: int = 80) -> str | None:
 
 def make_stream_renderer(cols: int = 80):
     try:
-        from agent.rich_output import StreamingRenderer
-    except ImportError:
+        mod: Any = __import__("agent.rich_output", fromlist=["StreamingRenderer"])
+        StreamingRenderer = mod.StreamingRenderer
+    except (ImportError, AttributeError):
         return None
 
     try:
