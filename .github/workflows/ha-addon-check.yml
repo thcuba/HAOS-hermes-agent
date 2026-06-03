@@ -1,0 +1,17 @@
+name: Home Assistant Add-on Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Home Assistant Add-on Validation
+        uses: home-assistant/actions/hassio-addon-validator@master # This action doesn't seem to have stable release tags with SHAs easily discoverable, keeping master for now as per HA convention if SHAs are not available.
