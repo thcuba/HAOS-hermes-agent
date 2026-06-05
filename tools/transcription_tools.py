@@ -67,7 +67,8 @@ def _safe_find_spec(module_name: str) -> bool:
     try:
         return _ilu.find_spec(module_name) is not None
     except (ImportError, ValueError):
-        return module_name in globals() or module_name in os.sys.modules
+        import sys
+        return module_name in globals() or module_name in sys.modules
 
 
 _HAS_FASTER_WHISPER = _safe_find_spec("faster_whisper")
@@ -384,7 +385,7 @@ def _load_local_whisper_model(model_name: str):
     We try ``auto`` first (fast CUDA path when it works), and on any CUDA
     library load failure fall back to CPU + int8.
     """
-    from faster_whisper import WhisperModel
+    from faster_whisper import WhisperModel  # type: ignore[import-unresolved]
     try:
         return WhisperModel(model_name, device="auto", compute_type="auto")
     except Exception as exc:
@@ -418,12 +419,13 @@ def _transcribe_local(file_path: str, model_name: str) -> Dict[str, Any]:
             or os.getenv(LOCAL_STT_LANGUAGE_ENV)
             or None
         )
-        transcribe_kwargs = {"beam_size": 5}
+        transcribe_kwargs: Dict[str, Any] = {"beam_size": 5}
         if _forced_lang:
             transcribe_kwargs["language"] = _forced_lang
 
         try:
-            segments, info = _local_model.transcribe(file_path, **transcribe_kwargs)
+            assert _local_model is not None
+            segments, info = _local_model.transcribe(file_path, **transcribe_kwargs)  # type: ignore[attr-defined]
             transcript = " ".join(segment.text.strip() for segment in segments)
         except Exception as exc:
             # CUDA runtime libs sometimes only fail at dlopen-on-first-use,
@@ -440,9 +442,10 @@ def _transcribe_local(file_path: str, model_name: str) -> Dict[str, Any]:
             )
             _local_model = None
             _local_model_name = None
-            from faster_whisper import WhisperModel
+            from faster_whisper import WhisperModel  # type: ignore[import-unresolved]
             _local_model = WhisperModel(model_name, device="cpu", compute_type="int8")
             _local_model_name = model_name
+            assert _local_model is not None
             segments, info = _local_model.transcribe(file_path, **transcribe_kwargs)
             transcript = " ".join(segment.text.strip() for segment in segments)
 
@@ -505,6 +508,7 @@ def _transcribe_local_command(file_path: str, model_name: str) -> Dict[str, Any]
             prepared_input, prep_error = _prepare_local_audio(file_path, output_dir)
             if prep_error:
                 return {"success": False, "transcript": "", "error": prep_error}
+            assert prepared_input is not None
 
             command = command_template.format(
                 input_path=shlex.quote(prepared_input),
@@ -676,7 +680,7 @@ def _transcribe_mistral(file_path: str, model_name: str) -> Dict[str, Any]:
         return {"success": False, "transcript": "", "error": "MISTRAL_API_KEY not set"}
 
     try:
-        from mistralai.client import Mistral
+        from mistralai.client import Mistral  # type: ignore[import-unresolved]
 
         with Mistral(api_key=api_key) as client:
             with open(file_path, "rb") as audio_file:

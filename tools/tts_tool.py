@@ -86,7 +86,7 @@ def _import_edge_tts():
         pass
     except Exception as e:
         raise ImportError(str(e))
-    import edge_tts
+    import edge_tts  # type: ignore[import-unresolved]
     return edge_tts
 
 def _import_elevenlabs():
@@ -107,7 +107,7 @@ def _import_elevenlabs():
         pass
     except Exception as e:  # FeatureUnavailable or any unexpected error
         raise ImportError(str(e))
-    from elevenlabs.client import ElevenLabs
+    from elevenlabs.client import ElevenLabs  # type: ignore[import-unresolved]
     return ElevenLabs
 
 def _import_openai_client():
@@ -117,18 +117,18 @@ def _import_openai_client():
 
 def _import_mistral_client():
     """Lazy import Mistral client. Returns the class or raises ImportError."""
-    from mistralai.client import Mistral
+    from mistralai.client import Mistral  # type: ignore[import-unresolved]
     return Mistral
 
 def _import_sounddevice():
     """Lazy import sounddevice. Returns the module or raises ImportError/OSError."""
-    import sounddevice as sd
+    import sounddevice as sd  # type: ignore[import-unresolved]
     return sd
 
 
 def _import_kittentts():
     """Lazy import KittenTTS. Returns the class or raises ImportError."""
-    from kittentts import KittenTTS
+    from kittentts import KittenTTS  # type: ignore[import-unresolved]
     return KittenTTS
 
 
@@ -140,7 +140,7 @@ def _import_piper():
     wheels (Linux / macOS / Windows, x86_64 + ARM64) with embedded espeak-ng.
     Voice models (.onnx + .onnx.json) are downloaded on first use.
     """
-    from piper import PiperVoice
+    from piper import PiperVoice  # type: ignore[import-unresolved]
     return PiperVoice
 
 
@@ -1594,7 +1594,7 @@ def _generate_kittentts(text: str, output_path: str, tts_config: Dict[str, Any])
     audio = model.generate(text, voice=voice, speed=speed, clean_text=clean_text)
 
     # Save as WAV
-    import soundfile as sf
+    import soundfile as sf  # type: ignore[import-unresolved]
     wav_path = output_path
     if not output_path.endswith(".wav"):
         wav_path = output_path.rsplit(".", 1)[0] + ".wav"
@@ -2119,7 +2119,7 @@ def stream_tts_to_speaker(
                     for chunk in audio_iter:
                         if stop_event.is_set():
                             break
-                        import numpy as _np
+                        import numpy as _np  # type: ignore[import-unresolved]
                         audio_array = _np.frombuffer(chunk, dtype=_np.int16)
                         output_stream.write(audio_array.reshape(-1, 1))
                 else:
