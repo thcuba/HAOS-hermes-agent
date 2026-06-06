@@ -29,6 +29,7 @@ Usage::
 import logging
 import os
 import shlex
+import sys
 import shutil
 import subprocess
 import tempfile
@@ -67,7 +68,7 @@ def _safe_find_spec(module_name: str) -> bool:
     try:
         return _ilu.find_spec(module_name) is not None
     except (ImportError, ValueError):
-        return module_name in globals() or module_name in os.sys.modules
+        return module_name in globals() or module_name in sys.modules
 
 
 _HAS_FASTER_WHISPER = _safe_find_spec("faster_whisper")
@@ -418,12 +419,15 @@ def _transcribe_local(file_path: str, model_name: str) -> Dict[str, Any]:
             or os.getenv(LOCAL_STT_LANGUAGE_ENV)
             or None
         )
-        transcribe_kwargs = {"beam_size": 5}
+        transcribe_kwargs: Dict[str, Any] = {"beam_size": 5}
         if _forced_lang:
             transcribe_kwargs["language"] = _forced_lang
 
         try:
-            segments, info = _local_model.transcribe(file_path, **transcribe_kwargs)
+            model: Any = _local_model
+            if model is None:
+                raise RuntimeError("Model failed to load")
+            segments, info = model.transcribe(file_path, **transcribe_kwargs)
             transcript = " ".join(segment.text.strip() for segment in segments)
         except Exception as exc:
             # CUDA runtime libs sometimes only fail at dlopen-on-first-use,
@@ -503,8 +507,8 @@ def _transcribe_local_command(file_path: str, model_name: str) -> Dict[str, Any]
     try:
         with tempfile.TemporaryDirectory(prefix="hermes-local-stt-") as output_dir:
             prepared_input, prep_error = _prepare_local_audio(file_path, output_dir)
-            if prep_error:
-                return {"success": False, "transcript": "", "error": prep_error}
+            if prep_error or prepared_input is None:
+                return {"success": False, "transcript": "", "error": prep_error or "Preparation failed"}
 
             command = command_template.format(
                 input_path=shlex.quote(prepared_input),

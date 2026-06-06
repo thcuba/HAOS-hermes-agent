@@ -23,7 +23,7 @@ import json
 import logging
 import queue
 import threading
-from typing import Optional
+from typing import Any, Optional
 
 try:
     from websockets.sync.client import connect as ws_connect
@@ -43,7 +43,7 @@ class WsPublisherTransport:
     def __init__(self, url: str, *, connect_timeout: float = 2.0) -> None:
         self._url = url
         self._lock = threading.Lock()
-        self._ws: Optional[object] = None
+        self._ws: Any = None
         self._dead = False
         self._q: queue.Queue[object] = queue.Queue(maxsize=_QUEUE_MAX)
         self._worker: Optional[threading.Thread] = None
@@ -80,8 +80,9 @@ class WsPublisherTransport:
                 continue
             try:
                 with self._lock:
-                    if self._ws is not None:
-                        self._ws.send(item)  # type: ignore[union-attr]
+                    ws = self._ws
+                    if ws is not None:
+                        ws.send(item)
             except Exception as exc:
                 _log.debug("event publisher write failed: %s", exc)
                 self._dead = True
@@ -118,8 +119,9 @@ class WsPublisherTransport:
 
         try:
             with self._lock:
-                if self._ws is not None:
-                    self._ws.close()  # type: ignore[union-attr]
+                ws = self._ws
+                if ws is not None:
+                    ws.close()
         except Exception:
             pass
 
