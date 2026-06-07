@@ -186,7 +186,7 @@ def extract_local_skills():
                 "description": fm.get("description", ""),
                 "overview": overview,
                 "category": category,
-                "categoryLabel": CATEGORY_LABELS.get(category, category.replace("-", " ").title()),
+                "categoryLabel": CATEGORY_LABELS.get(category, str(category or "").replace("-", " ").title()),
                 "source": source_label,
                 "tags": tags or [],
                 "platforms": fm.get("platforms", []),
@@ -262,9 +262,10 @@ def extract_cached_index_skills():
 
     for s in skills:
         if not s["categoryLabel"]:
+            cat = str(s["category"]) if s["category"] else ""
             s["categoryLabel"] = CATEGORY_LABELS.get(
-                s["category"],
-                s["category"].replace("-", " ").title() if s["category"] else "Uncategorized",
+                cat,
+                cat.replace("-", " ").title() if cat else "Uncategorized",
             )
 
     return skills

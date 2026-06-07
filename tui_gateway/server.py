@@ -6564,7 +6564,7 @@ def _(rid, params: dict) -> dict:
                 def print(self, *a, **k):
                     pass
 
-            do_install(query, skip_confirm=True, console=_Q())  # type: ignore
+            do_install(query, skip_confirm=True, console=_Q())
             return _ok(rid, {"installed": True, "name": query})
         if action == "browse":
             from hermes_cli.skills_hub import browse_skills
