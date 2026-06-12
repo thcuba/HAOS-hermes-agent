@@ -2070,6 +2070,8 @@ def terminal_tool(
                 
                 # Got a result
                 break
+
+            assert result is not None
             
             # Extract output
             output = result.get("output", "")
