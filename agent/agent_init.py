@@ -42,6 +42,7 @@ from agent.model_metadata import (
     query_ollama_num_ctx,
 )
 from agent.process_bootstrap import _install_safe_stdio
+from agent.rate_limit_tracker import RateLimitState
 from agent.subdirectory_hints import SubdirectoryHintTracker
 from agent.think_scrubber import StreamingThinkScrubber
 from agent.tool_guardrails import (
@@ -610,13 +611,13 @@ def init_agent(
                 _query_params = {
                     k: v[0] for k, v in parse_qs(_parsed_url.query).items()
                 }
-                client_kwargs = {
+                client_kwargs: Dict[str, Any] = {
                     "api_key": api_key,
                     "base_url": _clean_url,
                     "default_query": _query_params,
                 }
             else:
-                client_kwargs = {"api_key": api_key, "base_url": base_url}
+                client_kwargs: Dict[str, Any] = {"api_key": api_key, "base_url": base_url}
             if _provider_timeout is not None:
                 client_kwargs["timeout"] = _provider_timeout
             if agent.provider == "copilot-acp":
@@ -661,7 +662,7 @@ def init_agent(
             _routed_client, _ = resolve_provider_client(
                 agent.provider or "auto", model=agent.model, raw_codex=True)
             if _routed_client is not None:
-                client_kwargs = {
+                client_kwargs: Dict[str, Any] = {
                     "api_key": _routed_client.api_key,
                     "base_url": str(_routed_client.base_url),
                 }
@@ -718,7 +719,7 @@ def init_agent(
                             agent.provider = _fb["provider"]
                             agent.model = _fb_model or _fb["model"]
                             agent._fallback_activated = True
-                            client_kwargs = {
+                            client_kwargs: Dict[str, Any] = {
                                 "api_key": _fb_client.api_key,
                                 "base_url": str(_fb_client.base_url),
                             }

@@ -1049,29 +1049,7 @@ class CheckpointManager:
         keep = commits[-self.max_snapshots:]
 
         # Rebuild a linear chain off keep[0]'s tree.
-        new_parent: Optional[str] = None
-        for sha in keep:
-            ok_tree, tree_sha, _ = _run_git(
-                ["rev-parse", f"{sha}^{{tree}}"], store, working_dir,
-            )
-            if not ok_tree or not tree_sha:
-                return
-            ok_msg, msg, _ = _run_git(
-                ["log", "--format=%s", "-1", sha], store, working_dir,
-            )
-            commit_msg = msg if ok_msg and msg else "checkpoint"
-            args = ["commit-tree", tree_sha, "-m", commit_msg, "--no-gpg-sign"]
-            if new_parent is not None:
-                args = ["commit-tree", tree_sha, "-p", new_parent,
-                        "-m", commit_msg, "--no-gpg-sign"]
-            ok_commit, new_sha, _ = _run_git(args, store, working_dir)
-            if not ok_commit or not new_sha:
-                return
-            new_parent = new_sha
-
-        if new_parent is None:
-            return
-        _run_git(["update-ref", ref, new_parent], store, working_dir)
+        _rebuild_ref_chain(store, working_dir, ref, keep)
 
         # Reclaim objects from the dropped commits.
         _run_git(
@@ -1132,32 +1110,8 @@ class CheckpointManager:
                     continue
                 commits = list_out.splitlines()
                 keep = commits[1:]  # drop oldest
-                new_parent: Optional[str] = None
-                fail = False
-                for sha in keep:
-                    ok_tree, tree_sha, _ = _run_git(
-                        ["rev-parse", f"{sha}^{{tree}}"], store, str(store.parent),
-                    )
-                    if not ok_tree or not tree_sha:
-                        fail = True
-                        break
-                    ok_msg, msg, _ = _run_git(
-                        ["log", "--format=%s", "-1", sha], store, str(store.parent),
-                    )
-                    commit_msg = msg if ok_msg and msg else "checkpoint"
-                    args = ["commit-tree", tree_sha, "-m", commit_msg, "--no-gpg-sign"]
-                    if new_parent is not None:
-                        args = ["commit-tree", tree_sha, "-p", new_parent,
-                                "-m", commit_msg, "--no-gpg-sign"]
-                    ok_commit, new_sha, _ = _run_git(args, store, str(store.parent))
-                    if not ok_commit or not new_sha:
-                        fail = True
-                        break
-                    new_parent = new_sha
-                if fail or new_parent is None:
-                    continue
-                _run_git(["update-ref", ref, new_parent], store, str(store.parent))
-                any_dropped = True
+                if _rebuild_ref_chain(store, str(store.parent), ref, keep):
+                    any_dropped = True
             if not any_dropped:
                 break
 
@@ -1415,32 +1369,8 @@ def prune_checkpoints(
                         continue
                     commits = lo.splitlines()
                     keep = commits[1:]
-                    new_parent: Optional[str] = None
-                    fail = False
-                    for sha in keep:
-                        ok_t, tsha, _ = _run_git(
-                            ["rev-parse", f"{sha}^{{tree}}"], store, str(base),
-                        )
-                        if not ok_t or not tsha:
-                            fail = True
-                            break
-                        ok_m, m, _ = _run_git(
-                            ["log", "--format=%s", "-1", sha], store, str(base),
-                        )
-                        msg = m if ok_m and m else "checkpoint"
-                        args = ["commit-tree", tsha, "-m", msg, "--no-gpg-sign"]
-                        if new_parent is not None:
-                            args = ["commit-tree", tsha, "-p", new_parent,
-                                    "-m", msg, "--no-gpg-sign"]
-                        ok_cm, new_sha, _ = _run_git(args, store, str(base))
-                        if not ok_cm or not new_sha:
-                            fail = True
-                            break
-                        new_parent = new_sha
-                    if fail or new_parent is None:
-                        continue
-                    _run_git(["update-ref", ref, new_parent], store, str(base))
-                    any_drop = True
+                    if _rebuild_ref_chain(store, str(base), ref, keep):
+                        any_drop = True
                 if not any_drop:
                     break
             _run_git(
@@ -1614,6 +1544,40 @@ def clear_all(checkpoint_base: Optional[Path] = None) -> Dict[str, int]:
     except OSError as exc:
         logger.warning("Could not clear checkpoint base %s: %s", base, exc)
     return out
+
+
+def _rebuild_ref_chain(store: Path, working_dir: str, ref: str, commits: List[str]) -> bool:
+    """Rebuild a linear chain of commits and update the ref.
+
+    `commits` should be in oldest -> newest order.
+    Returns True if successful.
+    """
+    if not commits:
+        return False
+    new_parent: Optional[str] = None
+    for sha in commits:
+        ok_tree, tree_sha, _ = _run_git(
+            ["rev-parse", f"{sha}^{{tree}}"], store, working_dir,
+        )
+        if not ok_tree or not tree_sha:
+            return False
+        ok_msg, msg, _ = _run_git(
+            ["log", "--format=%s", "-1", sha], store, working_dir,
+        )
+        commit_msg = msg if ok_msg and msg else "checkpoint"
+        args = ["commit-tree", tree_sha, "-m", commit_msg, "--no-gpg-sign"]
+        if new_parent is not None:
+            args = ["commit-tree", tree_sha, "-p", new_parent,
+                    "-m", commit_msg, "--no-gpg-sign"]
+        ok_commit, new_sha, _ = _run_git(args, store, working_dir)
+        if not ok_commit or not new_sha:
+            return False
+        new_parent = new_sha
+
+    if new_parent is None:
+        return False
+    ok_upd, _, _ = _run_git(["update-ref", ref, new_parent], store, working_dir)
+    return ok_upd
 
 
 def clear_legacy(checkpoint_base: Optional[Path] = None) -> Dict[str, int]:

@@ -45,7 +45,7 @@ def _get_anthropic_sdk():
             # FeatureUnavailable — fall through to ImportError handling below
             pass
         try:
-            import anthropic as _sdk
+            import anthropic as _sdk  # type: ignore[import-unresolved]
             _anthropic_sdk = _sdk
         except ImportError:
             _anthropic_sdk = None
@@ -219,13 +219,15 @@ def _supports_xhigh_effort(model: str) -> bool:
     return any(v in model for v in _XHIGH_EFFORT_SUBSTRINGS)
 
 
-def _forbids_sampling_params(model: str) -> bool:
+def _forbids_sampling_params(model: Optional[str]) -> bool:
     """Return True for models that 400 on any non-default temperature/top_p/top_k.
 
     Opus 4.7 explicitly rejects sampling parameters; later Claude releases are
     expected to follow suit.  Callers should omit these fields entirely rather
     than passing zero/default values (the API rejects anything non-null).
     """
+    if model is None:
+        return False
     return any(v in model for v in _NO_SAMPLING_PARAMS_SUBSTRINGS)
 
 
@@ -566,8 +568,8 @@ def _common_betas_for_base_url(
 
 def _build_anthropic_client_with_bearer_hook(
     token_provider,
-    base_url: str = None,
-    timeout: float = None,
+    base_url: Optional[str] = None,
+    timeout: Optional[float] = None,
     *,
     drop_context_1m_beta: bool = False,
 ):
@@ -639,8 +641,8 @@ def _build_anthropic_client_with_bearer_hook(
 
 def build_anthropic_client(
     api_key,
-    base_url: str = None,
-    timeout: float = None,
+    base_url: Optional[str] = None,
+    timeout: Optional[float] = None,
     *,
     drop_context_1m_beta: bool = False,
 ):
@@ -692,7 +694,7 @@ def build_anthropic_client(
 
     normalized_base_url = _normalize_base_url_text(base_url)
     _read_timeout = timeout if (isinstance(timeout, (int, float)) and timeout > 0) else 900.0
-    kwargs = {
+    kwargs: Dict[str, Any] = {
         "timeout": Timeout(timeout=float(_read_timeout), connect=10.0),
     }
     if normalized_base_url:
