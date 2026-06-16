@@ -44,10 +44,15 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@e58605a9b6da7c637471fab8847a5e5a6b8df081  # v5
 
-      - name: Install ruff + ty
+      - name: Install dependencies and tools
         run: |
           uv tool install ruff
           uv tool install ty
+          # Install project dependencies so ty can resolve imports.
+          # Use --system or create a temporary venv if needed, but since
+          # this is a disposable runner, installing into the system
+          # python or a managed uv environment is preferred.
+          uv pip install --system -e ".[all]"
 
       - name: Determine base ref
         id: base
