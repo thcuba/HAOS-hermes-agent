@@ -445,6 +445,7 @@ def _transcribe_local(file_path: str, model_name: str) -> Dict[str, Any]:
             from faster_whisper import WhisperModel
             _local_model = WhisperModel(model_name, device="cpu", compute_type="int8")
             _local_model_name = model_name
+            assert _local_model is not None
             segments, info = _local_model.transcribe(file_path, **transcribe_kwargs)
             transcript = " ".join(segment.text.strip() for segment in segments)
 

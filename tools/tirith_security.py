@@ -461,14 +461,14 @@ def _resolve_tirith_path(configured_path: str) -> str:
 
     expanded = os.path.expanduser(configured_path)
     explicit = _is_explicit_path(configured_path)
-    install_failed = _resolved_path is _INSTALL_FAILED
+    install_failed = not isinstance(_resolved_path, str) and _resolved_path is not None
 
     # Platform has no tirith build (Windows etc.). Cache the verdict and
     # return the unexpanded configured path — the spawn loop will fail-open
     # via the dedupe'd OSError handler, but only after the first call; on
     # subsequent calls the fast-path above short-circuits before spawning.
     if not explicit and not is_platform_supported():
-        _resolved_path = _INSTALL_FAILED
+        _resolved_path = False  # _INSTALL_FAILED equivalent
         _install_failure_reason = "unsupported_platform"
         return expanded
 
@@ -483,7 +483,7 @@ def _resolve_tirith_path(configured_path: str) -> str:
             _resolved_path = found
             return found
         logger.warning("Configured tirith path %r not found; scanning disabled", configured_path)
-        _resolved_path = _INSTALL_FAILED
+        _resolved_path = False
         _install_failure_reason = "explicit_path_missing"
         return expanded
 
@@ -528,7 +528,7 @@ def _resolve_tirith_path(configured_path: str) -> str:
     # detect retryable causes (e.g. cosign_missing) without restart.
     disk_reason = _read_failure_reason()
     if disk_reason is not None and _is_install_failed_on_disk():
-        _resolved_path = _INSTALL_FAILED
+        _resolved_path = False
         _install_failure_reason = disk_reason
         return expanded
 
@@ -540,7 +540,7 @@ def _resolve_tirith_path(configured_path: str) -> str:
         return installed
 
     # Install failed — cache the miss and persist reason to disk
-    _resolved_path = _INSTALL_FAILED
+    _resolved_path = False
     _install_failure_reason = reason
     _mark_install_failed(reason)
     return expanded

@@ -48,6 +48,7 @@ jobs:
         run: |
           uv tool install ruff
           uv tool install ty
+          uv pip install --system -e ".[all]"
 
       - name: Determine base ref
         id: base

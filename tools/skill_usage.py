@@ -31,18 +31,18 @@ import tempfile
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, cast
 
 from hermes_constants import get_hermes_home
 
 logger = logging.getLogger(__name__)
 
 # fcntl is Unix-only; on Windows use msvcrt for file locking.
-msvcrt = None
+msvcrt: Any = None
+fcntl: Any = None
 try:
     import fcntl
 except ImportError:  # pragma: no cover - platform-specific fallback
-    fcntl = None
     try:
         import msvcrt
     except ImportError:
@@ -82,7 +82,8 @@ def _usage_file_lock():
             fcntl.flock(fd, fcntl.LOCK_EX)
         else:
             fd.seek(0)
-            msvcrt.locking(fd.fileno(), msvcrt.LK_LOCK, 1)
+            msvcrt_any = cast(Any, msvcrt)
+            msvcrt_any.locking(fd.fileno(), msvcrt_any.LK_LOCK, 1)
         yield
     finally:
         if fcntl:
@@ -93,7 +94,8 @@ def _usage_file_lock():
         elif msvcrt:
             try:
                 fd.seek(0)
-                msvcrt.locking(fd.fileno(), msvcrt.LK_UNLCK, 1)
+                msvcrt_any = cast(Any, msvcrt)
+                msvcrt_any.locking(fd.fileno(), msvcrt_any.LK_UNLCK, 1)
             except (OSError, IOError):
                 pass
         fd.close()
