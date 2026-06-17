@@ -49,6 +49,14 @@ jobs:
           uv tool install ruff
           uv tool install ty
 
+      - name: Set up Python 3.13
+        run: uv python install 3.13
+
+      - name: Install project dependencies
+        run: |
+          uv venv .venv --python 3.13
+          uv pip install -e ".[all,dev,messaging,voice]"
+
       - name: Determine base ref
         id: base
         run: |
@@ -71,7 +79,7 @@ jobs:
           mkdir -p .lint-reports/head
           ruff check --output-format json --exit-zero \
             > .lint-reports/head/ruff.json || true
-          ty check --output-format gitlab --exit-zero \
+          ty check --output-format gitlab --exit-zero --python .venv/bin/python \
             > .lint-reports/head/ty.json || true
           echo "HEAD ruff: $(wc -c < .lint-reports/head/ruff.json) bytes"
           echo "HEAD ty:   $(wc -c < .lint-reports/head/ty.json) bytes"
@@ -92,9 +100,12 @@ jobs:
             git worktree add --detach /tmp/lint-base "$BASE_SHA"
             (
               cd /tmp/lint-base
+              # Install dependencies for base too to resolve imports
+              uv venv .venv --python 3.13
+              uv pip install -e ".[all,dev,messaging,voice]"
               ruff check --output-format json --exit-zero \
                 > "$GITHUB_WORKSPACE/.lint-reports/base/ruff.json" || true
-              ty check --output-format gitlab --exit-zero \
+              ty check --output-format gitlab --exit-zero --python .venv/bin/python \
                 > "$GITHUB_WORKSPACE/.lint-reports/base/ty.json" || true
             )
             git worktree remove --force /tmp/lint-base
