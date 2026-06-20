@@ -204,7 +204,7 @@ try:
     try:
         from mcp.client.sse import sse_client
     except ImportError:
-        sse_client = None
+        sse_client: Any = None
         logger.debug("mcp.client.sse.sse_client not available -- SSE transport disabled")
     # Sampling types -- separated so older SDK versions don't break MCP support
     try:
@@ -928,7 +928,7 @@ class SamplingHandler:
             call_temperature = params.temperature
 
         # Forward server-provided tools
-        call_tools = None
+        call_tools: list | None = None
         server_tools = getattr(params, "tools", None)
         if server_tools:
             call_tools = [
@@ -953,13 +953,14 @@ class SamplingHandler:
 
         # Offload sync LLM call to thread (non-blocking)
         def _sync_call():
+            from typing import cast
             return call_llm(
                 task="mcp",
-                model=resolved_model or None,
+                model=cast(str, resolved_model or None),
                 messages=messages,
-                temperature=call_temperature,
+                temperature=cast(float, call_temperature),
                 max_tokens=max_tokens,
-                tools=call_tools,
+                tools=cast(list, call_tools),
                 timeout=self.timeout,
             )
 
@@ -1143,6 +1144,7 @@ class MCPServerTask:
             old_tool_names = set(self._registered_tool_names)
 
             # 1. Fetch current tool list from server
+            assert self.session is not None
             async with self._rpc_lock:
                 tools_result = await self.session.list_tools()
             new_mcp_tools = tools_result.tools if hasattr(tools_result, "tools") else []
@@ -1226,6 +1228,7 @@ class MCPServerTask:
                 # Timeout — no lifecycle event fired.  Send a keepalive
                 # to exercise the connection and detect stale sockets.
                 if self.session:
+                    assert self.session is not None
                     try:
                         await asyncio.wait_for(
                             self.session.list_tools(),
@@ -2330,6 +2333,7 @@ def _make_tool_handler(server_name: str, tool_name: str, tool_timeout: float):
             }, ensure_ascii=False)
 
         async def _call():
+            assert server.session is not None
             async with server._rpc_lock:
                 result = await server.session.call_tool(tool_name, arguments=args)
             # MCP CallToolResult has .content (list of content blocks) and .isError
@@ -2443,6 +2447,7 @@ def _make_list_resources_handler(server_name: str, tool_timeout: float):
             }, ensure_ascii=False)
 
         async def _call():
+            assert server.session is not None
             async with server._rpc_lock:
                 result = await server.session.list_resources()
             resources = []
@@ -2507,6 +2512,7 @@ def _make_read_resource_handler(server_name: str, tool_timeout: float):
             return tool_error("Missing required parameter 'uri'")
 
         async def _call():
+            assert server.session is not None
             async with server._rpc_lock:
                 result = await server.session.read_resource(uri)
             # read_resource returns ReadResourceResult with .contents list
@@ -2561,6 +2567,7 @@ def _make_list_prompts_handler(server_name: str, tool_timeout: float):
             }, ensure_ascii=False)
 
         async def _call():
+            assert server.session is not None
             async with server._rpc_lock:
                 result = await server.session.list_prompts()
             prompts = []
@@ -2631,6 +2638,7 @@ def _make_get_prompt_handler(server_name: str, tool_timeout: float):
         arguments = args.get("arguments", {})
 
         async def _call():
+            assert server.session is not None
             async with server._rpc_lock:
                 result = await server.session.get_prompt(name, arguments=arguments)
             # GetPromptResult has .messages list

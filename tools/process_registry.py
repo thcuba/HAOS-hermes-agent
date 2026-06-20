@@ -90,7 +90,7 @@ class ProcessSession:
     """A tracked background process with output buffering."""
     id: str                                     # Unique session ID ("proc_xxxxxxxxxxxx")
     command: str                                 # Original command string
-    task_id: str = ""                           # Task/sandbox isolation key
+    task_id: str | None = ""                    # Task/sandbox isolation key
     session_key: str = ""                       # Gateway session key (for reset protection)
     pid: Optional[int] = None                   # OS process ID
     process: Optional[subprocess.Popen] = None  # Popen handle (local only)
@@ -474,7 +474,7 @@ class ProcessRegistry:
         self,
         command: str,
         cwd: Optional[str] = None,
-        task_id: str = "",
+        task_id: Optional[str] = "",
         session_key: str = "",
         env_vars: Optional[dict] = None,
         use_pty: bool = False,
@@ -609,9 +609,9 @@ class ProcessRegistry:
         env: Any,
         command: str,
         cwd: Optional[str] = None,
-        task_id: str = "",
+        task_id: Optional[str] = "",
         session_key: str = "",
-        timeout: int = 10,
+        timeout: Optional[int] = 10,
     ) -> ProcessSession:
         """
         Spawn a background process through a non-local environment backend.
