@@ -64,7 +64,7 @@ RUN npm install --prefer-offline --no-audit && \
 # Python dependencies
 COPY pyproject.toml uv.lock ./
 RUN touch ./README.md
-RUN uv sync --frozen --no-install-project --extra all --extra messaging
+RUN uv sync --frozen --no-install-project --extra all --extra messaging --extra anthropic --extra bedrock --extra azure-identity --extra hindsight --extra matrix
 
 # Source code
 COPY --chown=root:root . .
@@ -93,6 +93,6 @@ LABEL \
     io.hass.description="The self-improving AI agent by Nous Research" \
     io.hass.arch="${BUILD_ARCH}" \
     io.hass.type="app" \
-    io.hass.version="0.15.1"
+    io.hass.version="0.17.0"
 
 ENTRYPOINT [ "/sbin/tini", "--", "/run.sh" ]
