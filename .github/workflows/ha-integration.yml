@@ -58,4 +58,4 @@ jobs:
       - name: Run Home Assistant Integration Tests
         run: |
           source .venv/bin/activate
-          python -m pytest tests/integration/test_ha_integration.py -v -m integration -n0
+          python -m pytest tests/integration/test_ha_integration.py -v -m integration
