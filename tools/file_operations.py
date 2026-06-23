@@ -149,7 +149,7 @@ class PatchResult:
     warning: Optional[str] = None
     
     def to_dict(self) -> dict:
-        result = {"success": self.success}
+        result: Dict[str, Any] = {"success": self.success}
         if self.diff:
             result["diff"] = self.diff
         if self.files_modified:
@@ -190,7 +190,7 @@ class SearchResult:
     warning: Optional[str] = None
     
     def to_dict(self) -> dict:
-        result = {"total_count": self.total_count}
+        result: Dict[str, Any] = {"total_count": self.total_count}
         if self.matches:
             result["matches"] = [
                 {"path": m.path, "line": m.line_number, "content": m.content}
@@ -230,6 +230,7 @@ class LintResult:
 class ExecuteResult:
     """Result from executing a shell command."""
     stdout: str = ""
+    stderr: str = ""
     exit_code: int = 0
 
 
@@ -514,7 +515,7 @@ class ShellFileOperations(FileOperations):
     This includes local, docker, singularity, ssh, modal, and daytona environments.
     """
     
-    def __init__(self, terminal_env, cwd: str = None):
+    def __init__(self, terminal_env, cwd: Optional[str] = None):
         """
         Initialize file operations with a terminal environment.
 
@@ -549,8 +550,8 @@ class ShellFileOperations(FileOperations):
         # Cache for command availability checks
         self._command_cache: Dict[str, bool] = {}
     
-    def _exec(self, command: str, cwd: str = None, timeout: int = None,
-              stdin_data: str = None) -> ExecuteResult:
+    def _exec(self, command: str, cwd: Optional[str] = None, timeout: Optional[int] = None,
+              stdin_data: Optional[str] = None) -> ExecuteResult:
         """Execute command via terminal backend.
 
         Args:
@@ -578,6 +579,7 @@ class ShellFileOperations(FileOperations):
         result = self.env.execute(command, cwd=effective_cwd, **kwargs)
         return ExecuteResult(
             stdout=result.get("output", ""),
+            stderr=result.get("stderr", ""),
             exit_code=result.get("returncode", 0)
         )
     
@@ -588,7 +590,7 @@ class ShellFileOperations(FileOperations):
             self._command_cache[cmd] = result.stdout.strip() == 'yes'
         return self._command_cache[cmd]
     
-    def _is_likely_binary(self, path: str, content_sample: str = None) -> bool:
+    def _is_likely_binary(self, path: str, content_sample: Optional[str] = None) -> bool:
         """
         Check if a file is likely binary.
         
@@ -1699,7 +1701,7 @@ class ShellFileOperations(FileOperations):
         
         # rg exit codes: 0=matches found, 1=no matches, 2=error
         if result.exit_code == 2 and not result.stdout.strip():
-            error_msg = result.stderr.strip() if hasattr(result, 'stderr') and result.stderr else "Search error"
+            error_msg = result.stderr.strip() if result.stderr else "Search error"
             return SearchResult(error=f"Search failed: {error_msg}", total_count=0)
         
         # Parse results based on output mode
@@ -1799,7 +1801,7 @@ class ShellFileOperations(FileOperations):
         
         # grep exit codes: 0=matches found, 1=no matches, 2=error
         if result.exit_code == 2 and not result.stdout.strip():
-            error_msg = result.stderr.strip() if hasattr(result, 'stderr') and result.stderr else "Search error"
+            error_msg = result.stderr.strip() if result.stderr else "Search error"
             return SearchResult(error=f"Search failed: {error_msg}", total_count=0)
         
         if output_mode == "files_only":

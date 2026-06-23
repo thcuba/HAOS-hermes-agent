@@ -59,8 +59,8 @@ def _load_fal_client() -> Any:
         pass
     except Exception as e:
         raise ImportError(str(e))
-    import fal_client as _fal_client  # type: ignore # noqa: F811 — module-global rebind
-    fal_client = _fal_client
+    import fal_client as _fal_client  # noqa: F811 — module-global rebind
+    fal_client = _fal_client  # type: ignore
     return fal_client
 
 
@@ -429,6 +429,7 @@ class _ManagedFalSyncClient:
                 raise RuntimeError("fal_client.client.add_timeout_header is required for timeout requests")
             self._add_timeout_header(start_timeout, request_headers)
 
+        assert self._maybe_retry_request is not None
         response = self._maybe_retry_request(
             self._http_client,
             "POST",
@@ -437,6 +438,7 @@ class _ManagedFalSyncClient:
             timeout=getattr(self._sync_client, "default_timeout", 120.0),
             headers=request_headers,
         )
+        assert self._raise_for_status is not None
         self._raise_for_status(response)
 
         data = response.json()
@@ -903,7 +905,7 @@ if __name__ == "__main__":
     print("✅ FAL.ai API key found")
 
     try:
-        import fal_client  # type: ignore[import-unresolved] # noqa: F401
+        import fal_client  # noqa: F401
         print("✅ fal_client library available")
     except ImportError:
         print("❌ fal_client library not found — pip install fal-client")
