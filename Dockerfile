@@ -37,6 +37,7 @@ RUN mkdir -p /run/nginx /var/log/nginx /var/www && \
 COPY --from=ghcr.io/astral-sh/uv:0.11.6 /uv /uvx /usr/local/bin/
 
 ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
 ENV PLAYWRIGHT_BROWSERS_PATH=/opt/hermes/.playwright
 ENV HERMES_WEB_DIST=/opt/hermes/hermes_cli/web_dist
 ENV HERMES_TUI_DIR=/opt/hermes/ui-tui
@@ -93,6 +94,6 @@ LABEL \
     io.hass.description="The self-improving AI agent by Nous Research" \
     io.hass.arch="${BUILD_ARCH}" \
     io.hass.type="app" \
-    io.hass.version="0.17.0"
+    io.hass.version="0.14.0"
 
 ENTRYPOINT [ "/sbin/tini", "--", "/run.sh" ]
