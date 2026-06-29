@@ -476,7 +476,7 @@ class ProcessRegistry:
         cwd: Optional[str] = None,
         task_id: Optional[str] = None,
         session_key: Optional[str] = None,
-        env_vars: Optional[dict] = None,
+        env_vars: Optional[Dict[str, str]] = None,
         use_pty: bool = False,
     ) -> ProcessSession:
         """
