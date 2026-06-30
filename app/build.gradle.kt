@@ -1,18 +1,12 @@
 // app/build.gradle.kts
 android {
-    compileSdk = 34 // o la tua versione corrente
-
     defaultConfig {
-        applicationId = "com.example.haos"
-        // ... altre configurazioni ...
-
-        // Definisce la costante leggendola da variabili d'ambiente o fallback locale
-        val apiKey = System.getenv("API_KEY") ?: "CHIAVE_DI_TEST"
-        buildConfigField("String", "API_KEY", "\"$apiKey\"")
-    }
-
-    buildFeatures {
-        // CORREZIONE: Abilita correttamente la generazione della classe BuildConfig
-        buildConfig = true
+        applicationId = "com.aistudio.haos-hermes-agent"
+        
+        // Incrementare il codice versione (es. da 42 a 43)
+        versionCode = 43 
+        
+        // Aggiornare coerentemente anche il nome della versione
+        versionName = "1.0.43" 
     }
 }
