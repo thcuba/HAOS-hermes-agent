@@ -76,7 +76,7 @@ def _effective_temperature_for_model(
         return None  # caller must omit temperature
     if isinstance(fixed_temperature, (int, float)):
         return float(fixed_temperature)
-    return requested_temperature
+    return cast(Optional[float], requested_temperature)
 
 
 @dataclass

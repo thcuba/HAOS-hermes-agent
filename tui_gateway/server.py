@@ -2097,7 +2097,7 @@ def _history_to_messages(history: list[dict]) -> list[dict]:
                 continue
         if role == "tool":
             tc_id = m.get("tool_call_id", "")
-            tc_info = tool_call_args.get(tc_id) if tc_id else None
+            tc_info: tuple[str, dict[str, Any]] | None = tool_call_args.get(tc_id) if tc_id else None
             name = (tc_info[0] if tc_info else None) or m.get("tool_name") or "tool"
             args = (tc_info[1] if tc_info else None) or {}
             messages.append(

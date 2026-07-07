@@ -26,7 +26,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 from hermes_constants import get_hermes_home
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, cast
 from urllib.parse import urljoin, urlparse, urlunparse
 
 import httpx
@@ -258,6 +258,8 @@ class GitHubAuth:
             return None
 
         try:
+            if key_path is None:
+                return None
             key_file = Path(key_path)
             if not key_file.exists():
                 return None
@@ -412,7 +414,7 @@ class GitHubSource(SkillSource):
 
         return SkillBundle(
             name=skill_name,
-            files=files,
+            files=cast(Dict[str, Union[str, bytes]], files),
             source="github",
             identifier=identifier,
             trust_level=trust,
@@ -863,7 +865,7 @@ class WellKnownSkillSource(SkillSource):
 
         return SkillBundle(
             name=skill_name,
-            files=downloaded,
+            files=cast(Dict[str, Union[str, bytes]], downloaded),
             source="well-known",
             identifier=self._wrap_identifier(parsed["base_url"], skill_name),
             trust_level="community",
@@ -1872,7 +1874,7 @@ class ClawHubSource(SkillSource):
 
         return SkillBundle(
             name=slug,
-            files=files,
+            files=cast(Dict[str, Union[str, bytes]], files),
             source="clawhub",
             identifier=slug,
             trust_level="community",
