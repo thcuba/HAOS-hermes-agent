@@ -314,14 +314,8 @@ skip-magic-trailing-comma = true
 line-ending = "lf"
 docstring-code-format = true
 
-[tool.ty]
-target-version = "py311"
+[tool.ty.environment]
 python-version = "3.11"
-output-format = "human"
-strict = true
-warn-unused-ignores = true
-warn-unreachable = true
-warn-unused = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
