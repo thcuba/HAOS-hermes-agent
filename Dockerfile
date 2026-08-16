@@ -94,6 +94,6 @@ LABEL \
     io.hass.description="The self-improving AI agent by Nous Research" \
     io.hass.arch="${BUILD_ARCH}" \
     io.hass.type="app" \
-    io.hass.version="0.18.2"
+    io.hass.version="0.20.1"
 
 ENTRYPOINT [ "/sbin/tini", "--", "/run.sh" ]
