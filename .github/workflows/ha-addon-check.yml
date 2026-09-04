@@ -1,4 +1,4 @@
-﻿name: Home Assistant Add-on Check
+name: Home Assistant Add-on Check
 
 on:
   push:
