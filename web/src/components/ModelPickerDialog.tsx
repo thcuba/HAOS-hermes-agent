@@ -331,7 +331,11 @@ function ProviderColumn({
   onSelect(slug: string): void;
 }) {
   return (
-    <div className="border-r border-border overflow-y-auto">
+    <div
+      role="listbox"
+      aria-label="Providers"
+      className="border-r border-border overflow-y-auto"
+    >
       {loading && (
         <div className="flex items-center gap-2 p-4 text-xs text-muted-foreground">
           <Spinner className="text-xs" /> loading…
@@ -356,7 +360,16 @@ function ProviderColumn({
           <ListItem
             key={p.slug}
             active={active}
+            role="option"
+            aria-selected={active}
+            tabIndex={0}
             onClick={() => onSelect(p.slug)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onSelect(p.slug);
+              }
+            }}
             className={`items-start text-xs border-l-2 ${
               active ? "border-l-primary" : "border-l-transparent"
             }`}
@@ -411,7 +424,7 @@ function ModelColumn({
   }
 
   return (
-    <div className="overflow-y-auto">
+    <div role="listbox" aria-label="Models" className="overflow-y-auto">
       {provider.warning && (
         <div className="p-3 text-xs text-destructive border-b border-border">
           {provider.warning}
@@ -434,8 +447,17 @@ function ModelColumn({
             <ListItem
               key={m}
               active={active}
+              role="option"
+              aria-selected={active}
+              tabIndex={0}
               onClick={() => onSelect(m)}
               onDoubleClick={() => onConfirm(m)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onSelect(m);
+                }
+              }}
               className="px-3 py-1.5 text-xs font-mono"
             >
               <Check
