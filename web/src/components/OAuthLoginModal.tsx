@@ -222,6 +222,7 @@ export function OAuthLoginModal({ provider, onClose, onSuccess }: Props) {
                   placeholder={t.oauth.pasteCode}
                   onKeyDown={(e) => e.key === "Enter" && handleSubmitPkceCode()}
                   autoFocus
+                  aria-label={t.oauth.pasteCode}
                 />
                 <div className="flex items-center gap-2 justify-between">
                   <a
