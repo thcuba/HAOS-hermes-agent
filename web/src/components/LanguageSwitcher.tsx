@@ -150,7 +150,7 @@ function LanguageSwitcherOptions({
 
             <span className="truncate">{meta.name}</span>
 
-            {selected && <span className="ml-auto text-xs">✓</span>}
+            {selected && <span className="ml-auto text-xs" aria-hidden>✓</span>}
           </button>
         );
       })}
