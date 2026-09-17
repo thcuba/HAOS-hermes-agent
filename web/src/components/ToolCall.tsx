@@ -91,7 +91,14 @@ export function ToolCall({ tool }: { tool: ToolEntry }) {
       <ListItem
         onClick={() => setUserOverride(!open)}
         disabled={!hasBody}
-        aria-expanded={open}
+        aria-expanded={hasBody ? open : undefined}
+        aria-label={
+          hasBody
+            ? open
+              ? `Collapse ${tool.name} tool details`
+              : `Expand ${tool.name} tool details`
+            : undefined
+        }
         className="px-2.5 py-1.5 text-xs hover:bg-foreground/2 disabled:cursor-default"
       >
         {hasBody ? (
