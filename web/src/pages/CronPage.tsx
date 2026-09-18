@@ -479,7 +479,9 @@ export default function CronPage() {
                     size="icon"
                     title={state === "paused" ? t.cron.resume : t.cron.pause}
                     aria-label={
-                      state === "paused" ? t.cron.resume : t.cron.pause
+                      state === "paused"
+                        ? `${t.cron.resume}: ${title}`
+                        : `${t.cron.pause}: ${title}`
                     }
                     onClick={() => handlePauseResume(job)}
                     className={
@@ -493,7 +495,7 @@ export default function CronPage() {
                     ghost
                     size="icon"
                     title={t.cron.triggerNow}
-                    aria-label={t.cron.triggerNow}
+                    aria-label={`${t.cron.triggerNow}: ${title}`}
                     onClick={() => handleTrigger(job)}
                   >
                     <Zap />
@@ -504,7 +506,7 @@ export default function CronPage() {
                     destructive
                     size="icon"
                     title={t.common.delete}
-                    aria-label={t.common.delete}
+                    aria-label={`${t.common.delete}: ${title}`}
                     onClick={() => jobDelete.requestDelete(jobKey)}
                   >
                     <Trash2 />
