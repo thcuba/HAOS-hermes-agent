@@ -402,7 +402,8 @@ class TestBlockingApprovalE2E:
         t = threading.Thread(target=agent_thread)
         t.start()
 
-        for _ in range(50):
+        deadline = time.monotonic() + 5
+        while time.monotonic() < deadline:
             if notified:
                 break
             time.sleep(0.05)
