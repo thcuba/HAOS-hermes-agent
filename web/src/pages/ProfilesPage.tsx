@@ -277,7 +277,7 @@ export default function ProfilesPage() {
               size="icon"
               onClick={() => setCreateModalOpen(false)}
               className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
-              aria-label="Close"
+              aria-label={t.common.close}
             >
               <X />
             </Button>
@@ -446,7 +446,7 @@ export default function ProfilesPage() {
                         ghost
                         size="icon"
                         title={t.profiles.editSoul}
-                        aria-label={t.profiles.editSoul}
+                        aria-label={`${t.profiles.editSoul}: ${p.name}`}
                         onClick={() => openSoulEditor(p.name)}
                       >
                         {isEditingSoul ? (
@@ -461,7 +461,7 @@ export default function ProfilesPage() {
                         ghost
                         size="icon"
                         title={t.profiles.openInTerminal}
-                        aria-label={t.profiles.openInTerminal}
+                        aria-label={`${t.profiles.openInTerminal}: ${p.name}`}
                         onClick={() => handleCopyTerminalCommand(p.name)}
                       >
                         <Terminal className="h-4 w-4" />
@@ -471,7 +471,7 @@ export default function ProfilesPage() {
                           ghost
                           size="icon"
                           title={t.profiles.rename}
-                          aria-label={t.profiles.rename}
+                          aria-label={`${t.profiles.rename}: ${p.name}`}
                           onClick={() => {
                             setRenamingFrom(p.name);
                             setRenameTo(p.name);
@@ -485,7 +485,7 @@ export default function ProfilesPage() {
                           ghost
                           size="icon"
                           title={t.common.delete}
-                          aria-label={t.common.delete}
+                          aria-label={`${t.common.delete}: ${p.name}`}
                           onClick={() => profileDelete.requestDelete(p.name)}
                         >
                           <Trash2 className="h-4 w-4 text-destructive" />

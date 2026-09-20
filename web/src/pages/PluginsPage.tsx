@@ -254,7 +254,11 @@ export default function PluginsPage() {
 
               <div className="flex items-center gap-3">
 
-                <Switch checked={installForce} onCheckedChange={setInstallForce} />
+                <Switch
+                  checked={installForce}
+                  onCheckedChange={setInstallForce}
+                  aria-label={t.pluginsPage.forceReinstall}
+                />
 
                 <span className="text-[0.7rem] tracking-[0.06em] text-midforeground/85 normal-case">
                   {t.pluginsPage.forceReinstall}
@@ -263,7 +267,11 @@ export default function PluginsPage() {
 
               <div className="flex items-center gap-3">
 
-                <Switch checked={installEnable} onCheckedChange={setInstallEnable} />
+                <Switch
+                  checked={installEnable}
+                  onCheckedChange={setInstallEnable}
+                  aria-label={t.pluginsPage.enableAfterInstall}
+                />
 
                 <span className="text-[0.7rem] tracking-[0.06em] text-midforeground/85 normal-case">
                   {t.pluginsPage.enableAfterInstall}
@@ -525,6 +533,8 @@ function PluginRowCard(props: PluginRowCardProps) {
                 disabled={busy}
                 ghost
                 size="sm"
+                title={`${t.common.delete}: ${row.name}`}
+                aria-label={`${t.common.delete}: ${row.name}`}
                 onClick={() => setConfirmRemove(true)}
               >
 
