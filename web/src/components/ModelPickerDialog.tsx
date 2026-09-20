@@ -6,6 +6,7 @@ import type { GatewayClient } from "@/lib/gatewayClient";
 import { Check, Search, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useI18n } from "@/i18n";
 
 /**
  * Two-stage model picker modal.
@@ -64,6 +65,7 @@ interface Props {
 }
 
 export function ModelPickerDialog(props: Props) {
+  const { t } = useI18n();
   const {
     gw,
     sessionId,
@@ -216,7 +218,7 @@ export function ModelPickerDialog(props: Props) {
           size="icon"
           onClick={onClose}
           className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
-          aria-label="Close"
+          aria-label={t.common.close}
         >
           <X />
         </Button>
