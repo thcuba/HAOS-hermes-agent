@@ -244,9 +244,20 @@ export function ModelPickerDialog(props: Props) {
               placeholder="Filter providers and models…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="pl-7 h-8 text-sm"
+              className="pl-7 pr-7 h-8 text-sm"
               aria-label="Filter providers and models"
             />
+            {query && (
+              <Button
+                ghost
+                size="xs"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground h-6 w-6 p-0"
+                onClick={() => setQuery("")}
+                aria-label={t.common.clear}
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            )}
           </div>
         </div>
 
@@ -299,7 +310,7 @@ export function ModelPickerDialog(props: Props) {
 
           <div className="flex items-center gap-2 ml-auto">
             <Button outlined onClick={onClose} disabled={applying}>
-              Cancel
+              {t.common.cancel}
             </Button>
             <Button onClick={confirm} disabled={!canConfirm}>
               {applying ? <Spinner /> : "Switch"}
