@@ -105,13 +105,20 @@ function SortHeader({
   className?: string;
 }) {
   const active = col === sortKey;
+  const ariaSort = active
+    ? sortDir === "asc"
+      ? "ascending"
+      : "descending"
+    : "none";
+
   return (
-    <th
-      onClick={() => toggle(col)}
-      className={`cursor-pointer select-none ${className ?? ""}`}
-    >
-      <span className="inline-flex items-center gap-1.5 rounded px-1 -mx-1 py-0.5 hover:bg-muted/40 transition-colors">
-        {label}
+    <th scope="col" aria-sort={ariaSort} className={className}>
+      <button
+        type="button"
+        onClick={() => toggle(col)}
+        className="inline-flex items-center gap-1.5 rounded px-1 -mx-1 py-0.5 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring transition-colors select-none"
+      >
+        <span>{label}</span>
         {active ? (
           sortDir === "asc" ? (
             <ArrowUp className="h-3.5 w-3.5 text-foreground/80 shrink-0" />
@@ -121,7 +128,7 @@ function SortHeader({
         ) : (
           <ArrowUpDown className="h-3 w-3 text-muted-foreground/40 shrink-0" />
         )}
-      </span>
+      </button>
     </th>
   );
 }
