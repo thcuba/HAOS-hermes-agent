@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@nous-research/ui/ui/components/button";
+import { Spinner } from "@nous-research/ui/ui/components/spinner";
 import { cn } from "@/lib/utils";
 
 export function ConfirmDialog({
@@ -17,7 +18,7 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
 
-  // Focus the confirm button when opened; trap ESC to cancel.
+  // Focus the confirm button when opened; trap ESC to cancel (unless loading).
   useEffect(() => {
     if (!open) return;
 
@@ -29,7 +30,7 @@ export function ConfirmDialog({
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
-        onCancel();
+        if (!loading) onCancel();
       }
     };
 
@@ -42,7 +43,7 @@ export function ConfirmDialog({
       document.body.style.overflow = prevOverflow;
       prevActive?.focus?.();
     };
-  }, [open, onCancel]);
+  }, [open, loading, onCancel]);
 
   if (!open) return null;
 
@@ -53,7 +54,7 @@ export function ConfirmDialog({
       aria-labelledby="confirm-dialog-title"
       aria-describedby={description ? "confirm-dialog-desc" : undefined}
       onClick={(e) => {
-        if (e.target === e.currentTarget) onCancel();
+        if (e.target === e.currentTarget && !loading) onCancel();
       }}
       className={cn(
         "fixed inset-0 z-50 flex items-center justify-center",
@@ -113,8 +114,10 @@ export function ConfirmDialog({
             destructive={destructive}
             onClick={onConfirm}
             disabled={loading}
+            aria-busy={loading}
+            prefix={loading ? <Spinner /> : undefined}
           >
-            {loading ? "…" : confirmLabel}
+            {confirmLabel}
           </Button>
         </div>
       </div>
