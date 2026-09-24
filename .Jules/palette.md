@@ -9,3 +9,7 @@
 ## 2026-09-15 - Sortable Table Headers Accessibility
 **Learning:** Table header cells with `onClick` sort handlers (`<th onClick={...}>`) are not focusable or interactive for keyboard users (`Tab`/`Enter`) and lack screen reader state (`aria-sort`).
 **Action:** Always wrap sortable column header text in a `<button type="button">` with focus-visible ring styles and add `scope="col"` and `aria-sort` (`"ascending"`, `"descending"`, or `"none"`) to the parent `<th>` element.
+
+## 2026-09-16 - Confirm Dialog Loading Feedback and Dismissal Guarding
+**Learning:** Async confirm dialogs (e.g. destructive delete operations) often lack animated visual feedback (`Spinner`) and screen reader state (`aria-busy`), and can be accidentally cancelled mid-request via Escape or backdrop click.
+**Action:** Always attach `aria-busy={loading}` and `<Spinner />` to action buttons during pending operations, and guard backdrop clicks and Escape key handlers with `!loading`.
