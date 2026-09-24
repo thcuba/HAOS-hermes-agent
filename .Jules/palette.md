@@ -13,3 +13,7 @@
 ## 2026-09-16 - Confirm Dialog Loading Feedback and Dismissal Guarding
 **Learning:** Async confirm dialogs (e.g. destructive delete operations) often lack animated visual feedback (`Spinner`) and screen reader state (`aria-busy`), and can be accidentally cancelled mid-request via Escape or backdrop click.
 **Action:** Always attach `aria-busy={loading}` and `<Spinner />` to action buttons during pending operations, and guard backdrop clicks and Escape key handlers with `!loading`.
+
+## 2026-09-17 - Dialog Trigger ARIA Attributes
+**Learning:** Dialog trigger buttons that open modal or popover dialogs (e.g., model picker in ChatSidebar) often omit `aria-haspopup="dialog"` and `aria-expanded`, preventing screen reader users from realizing an interactive button opens a modal dialog context.
+**Action:** Always include `aria-haspopup="dialog"` and `aria-expanded={open}` on buttons that trigger dialog overlays.
