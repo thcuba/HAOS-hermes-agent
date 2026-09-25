@@ -326,6 +326,8 @@ export function ChatSidebar({ channel, className }: ChatSidebarProps) {
             }
             className="self-start min-w-0 px-0 py-0 normal-case tracking-normal text-sm font-medium hover:underline disabled:no-underline"
             title={info.model ?? "switch model"}
+            aria-haspopup="dialog"
+            aria-expanded={modelOpen}
           >
             <span className="truncate">{modelLabel}</span>
           </Button>
