@@ -13,6 +13,7 @@ const DS_BUTTON_OUTLINED_LINK_CN = cn(
   "leading-0 font-bold tracking-[0.2em] uppercase",
   "text-midground bg-transparent shadow-midground",
   "shadow-[inset_-1px_-1px_0_0_#00000080,inset_1px_1px_0_0_#ffffff80]",
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm",
 );
 
 export default function DocsPage() {
