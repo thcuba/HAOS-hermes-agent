@@ -17,3 +17,7 @@
 ## 2026-09-17 - Dialog Trigger ARIA Attributes
 **Learning:** Dialog trigger buttons that open modal or popover dialogs (e.g., model picker in ChatSidebar) often omit `aria-haspopup="dialog"` and `aria-expanded`, preventing screen reader users from realizing an interactive button opens a modal dialog context.
 **Action:** Always include `aria-haspopup="dialog"` and `aria-expanded={open}` on buttons that trigger dialog overlays.
+
+## 2026-09-18 - Keyboard Focus Visible Styles on Custom Link Buttons
+**Learning:** Custom styled anchor elements used as page header actions (e.g., `DS_BUTTON_OUTLINED_LINK_CN` in `DocsPage.tsx`) can omit `focus-visible` focus ring styles, leaving keyboard (`Tab`) navigation without visual focus feedback.
+**Action:** Always include `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2` on custom styled link button components.
