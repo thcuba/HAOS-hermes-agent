@@ -21,3 +21,7 @@
 ## 2026-09-18 - Keyboard Focus Visible Styles on Custom Link Buttons
 **Learning:** Custom styled anchor elements used as page header actions (e.g., `DS_BUTTON_OUTLINED_LINK_CN` in `DocsPage.tsx`) can omit `focus-visible` focus ring styles, leaving keyboard (`Tab`) navigation without visual focus feedback.
 **Action:** Always include `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2` on custom styled link button components.
+
+## 2026-09-19 - Label Association for Interactive Switch Controls
+**Learning:** `Switch` toggle controls paired with text using standard `<span>` tags or `<Label>` elements without explicit `id`/`htmlFor` bindings leave the text non-interactive when clicked and break semantic control binding for assistive technology.
+**Action:** Always connect `Switch` controls to their label text using matching `id` and `htmlFor` attributes, and include `cursor-pointer` on the label element to make clicking label text toggle the switch.

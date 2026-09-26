@@ -102,13 +102,21 @@ export function AutoField({
   }
 
   if (schema.type === "boolean") {
+    const switchId = `config-switch-${schemaKey.replace(/\./g, "-")}`;
     return (
       <div className="flex items-center justify-between gap-4">
         <div className="flex flex-col gap-0.5">
-          <Label className="text-sm">{label}</Label>
+          <Label htmlFor={switchId} className="cursor-pointer text-sm">
+            {label}
+          </Label>
           <FieldHint schema={schema} schemaKey={schemaKey} />
         </div>
-        <Switch checked={!!value} onCheckedChange={onChange} aria-label={label} />
+        <Switch
+          id={switchId}
+          checked={!!value}
+          onCheckedChange={onChange}
+          aria-label={label}
+        />
       </div>
     );
   }

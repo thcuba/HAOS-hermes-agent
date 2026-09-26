@@ -27,6 +27,7 @@ import { Spinner } from "@nous-research/ui/ui/components/spinner";
 import { Switch } from "@nous-research/ui/ui/components/switch";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useI18n } from "@/i18n";
 import { usePageHeader } from "@/contexts/usePageHeader";
 import { PluginSlot } from "@/plugins";
@@ -498,10 +499,12 @@ function SkillRow({
   onToggle,
   noDescriptionLabel,
 }: SkillRowProps) {
+  const switchId = `skill-toggle-${skill.name}`;
   return (
     <div className="group flex items-start gap-3 px-3 py-2.5 transition-colors hover:bg-muted/40">
       <div className="pt-0.5 shrink-0">
         <Switch
+          id={switchId}
           checked={skill.enabled}
           onCheckedChange={onToggle}
           disabled={toggling}
@@ -510,13 +513,14 @@ function SkillRow({
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-0.5">
-          <span
-            className={`font-mono-ui text-sm ${
+          <Label
+            htmlFor={switchId}
+            className={`cursor-pointer font-mono-ui text-sm ${
               skill.enabled ? "text-foreground" : "text-muted-foreground"
             }`}
           >
             {skill.name}
-          </span>
+          </Label>
         </div>
         <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
           {skill.description || noDescriptionLabel}

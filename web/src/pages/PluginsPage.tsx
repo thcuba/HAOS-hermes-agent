@@ -255,27 +255,35 @@ export default function PluginsPage() {
               <div className="flex items-center gap-3">
 
                 <Switch
+                  id="install-force-switch"
                   checked={installForce}
                   onCheckedChange={setInstallForce}
                   aria-label={t.pluginsPage.forceReinstall}
                 />
 
-                <span className="text-[0.7rem] tracking-[0.06em] text-midforeground/85 normal-case">
+                <Label
+                  htmlFor="install-force-switch"
+                  className="cursor-pointer text-[0.7rem] tracking-[0.06em] text-midforeground/85 normal-case"
+                >
                   {t.pluginsPage.forceReinstall}
-                </span>
+                </Label>
               </div>
 
               <div className="flex items-center gap-3">
 
                 <Switch
+                  id="install-enable-switch"
                   checked={installEnable}
                   onCheckedChange={setInstallEnable}
                   aria-label={t.pluginsPage.enableAfterInstall}
                 />
 
-                <span className="text-[0.7rem] tracking-[0.06em] text-midforeground/85 normal-case">
+                <Label
+                  htmlFor="install-enable-switch"
+                  className="cursor-pointer text-[0.7rem] tracking-[0.06em] text-midforeground/85 normal-case"
+                >
                   {t.pluginsPage.enableAfterInstall}
-                </span>
+                </Label>
               </div>
             </div>
 
