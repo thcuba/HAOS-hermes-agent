@@ -217,15 +217,22 @@ function UseAsMenu({
     }
   };
 
-  // Close on outside click.
+  // Close on outside click or Escape key.
   useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
       if (target && !target.closest?.("[data-use-as-menu]")) setOpen(false);
     };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
     window.addEventListener("mousedown", onDown);
-    return () => window.removeEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
   }, [open]);
 
   return (
@@ -244,9 +251,14 @@ function UseAsMenu({
         Use as <ChevronDown className="h-3 w-3" />
       </Button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 z-50 min-w-[220px] border border-border bg-card shadow-lg">
+        <div
+          role="menu"
+          aria-label={`Use as options for ${shortModelName(model)}`}
+          className="absolute right-0 top-full mt-1 z-50 min-w-[220px] border border-border bg-card shadow-lg"
+        >
           <button
             type="button"
+            role="menuitem"
             onClick={() => assign("main", "")}
             disabled={busy}
             className="flex w-full items-center justify-between px-3 py-2 text-xs hover:bg-muted/50 disabled:opacity-40"
@@ -262,12 +274,16 @@ function UseAsMenu({
             )}
           </button>
 
-          <div className="border-t border-border/50 px-3 py-1.5 text-[9px] uppercase tracking-wider text-muted-foreground">
+          <div
+            role="presentation"
+            className="border-t border-border/50 px-3 py-1.5 text-[9px] uppercase tracking-wider text-muted-foreground"
+          >
             Auxiliary task
           </div>
 
           <button
             type="button"
+            role="menuitem"
             onClick={() => assign("auxiliary", "")}
             disabled={busy}
             className="flex w-full items-center justify-between px-3 py-1.5 text-xs hover:bg-muted/50 disabled:opacity-40"
@@ -279,6 +295,7 @@ function UseAsMenu({
             <button
               key={t.key}
               type="button"
+              role="menuitem"
               onClick={() => assign("auxiliary", t.key)}
               disabled={busy}
               className="flex w-full items-center justify-between px-3 py-1.5 text-xs hover:bg-muted/50 disabled:opacity-40"
