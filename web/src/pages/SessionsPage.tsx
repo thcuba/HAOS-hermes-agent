@@ -293,6 +293,11 @@ function SessionRow({
     : null) ?? { icon: Globe, color: "text-muted-foreground" };
   const SourceIcon = sourceInfo.icon;
   const hasTitle = session.title && session.title !== "Untitled";
+  const displayTitle = hasTitle
+    ? session.title
+    : session.preview
+      ? session.preview.slice(0, 60)
+      : t.sessions.untitledSession;
 
   return (
     <div
@@ -315,11 +320,7 @@ function SessionRow({
               <span
                 className={`min-w-0 flex-1 truncate text-sm ${hasTitle ? "font-medium" : "text-muted-foreground italic"}`}
               >
-                {hasTitle
-                  ? session.title
-                  : session.preview
-                    ? session.preview.slice(0, 60)
-                    : t.sessions.untitledSession}
+                {displayTitle}
               </span>
               {session.is_active && (
                 <Badge tone="success" className="shrink-0 text-[10px]">
@@ -358,8 +359,8 @@ function SessionRow({
                 ghost
                 size="icon"
                 className="text-muted-foreground hover:text-success"
-                aria-label={t.sessions.resumeInChat}
-                title={t.sessions.resumeInChat}
+                aria-label={`${t.sessions.resumeInChat}: ${displayTitle}`}
+                title={`${t.sessions.resumeInChat}: ${displayTitle}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   navigate(`/chat?resume=${encodeURIComponent(session.id)}`);
@@ -372,7 +373,8 @@ function SessionRow({
               ghost
               destructive
               size="icon"
-              aria-label={t.sessions.deleteSession}
+              aria-label={`${t.sessions.deleteSession}: ${displayTitle}`}
+              title={`${t.sessions.deleteSession}: ${displayTitle}`}
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete();
