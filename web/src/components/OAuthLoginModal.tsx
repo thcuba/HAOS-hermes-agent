@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { ExternalLink, X, Check } from "lucide-react";
 import { Button } from "@nous-research/ui/ui/components/button";
 import { CopyButton } from "@nous-research/ui/ui/components/command-block";
@@ -139,7 +140,7 @@ export function OAuthLoginModal({ provider, onClose, onSuccess }: Props) {
     }
   };
 
-  const handleClose = async () => {
+  const handleClose = useCallback(async () => {
     if (start && phase !== "approved" && phase !== "error") {
       try {
         await api.cancelOAuthSession(start.session_id);
@@ -148,10 +149,22 @@ export function OAuthLoginModal({ provider, onClose, onSuccess }: Props) {
       }
     }
     onClose();
-  };
+  }, [start, phase, onClose]);
+
+  // Esc closes / cancels modal
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        void handleClose();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [handleClose]);
 
   const handleBackdrop = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) handleClose();
+    if (e.target === e.currentTarget) void handleClose();
   };
 
   const fmtTime = (s: number | null) => {
@@ -161,7 +174,7 @@ export function OAuthLoginModal({ provider, onClose, onSuccess }: Props) {
     return `${m}:${String(r).padStart(2, "0")}`;
   };
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-background/85 backdrop-blur-sm p-4"
       onClick={handleBackdrop}
@@ -369,6 +382,7 @@ export function OAuthLoginModal({ provider, onClose, onSuccess }: Props) {
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

@@ -29,3 +29,7 @@
 ## 2026-09-20 - Popover Menu Escape Key Dismissal and ARIA Menu Semantics
 **Learning:** Custom popover menus (such as model assignment menus) that open on button clicks often handle outside pointer clicks but omit `Escape` key listeners and ARIA menu roles (`role="menu"`, `role="menuitem"`), preventing keyboard users from dismissing the menu and screen readers from identifying menu items.
 **Action:** Always add a `keydown` event listener for `Escape` to close open popover menus, and apply `role="menu"`, `role="menuitem"`, and `role="presentation"` attributes to popover containers and items.
+
+## 2026-09-21 - Modal Portal Layering and Escape Key Dismissal
+**Learning:** OAuth and authentication modal dialogs rendered inside nested dashboard containers can be trapped in lower z-index stacking contexts below sidebar overlays, and omit `Escape` key listeners required by keyboard users to dismiss/cancel pending flows.
+**Action:** Always render top-level modal overlays using `createPortal(..., document.body)` and add a `keydown` event listener for `Escape` key dismissal.
