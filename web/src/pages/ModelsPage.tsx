@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Brain,
   ChevronDown,
@@ -534,7 +535,7 @@ function AuxiliaryTasksModal({
     }
   };
 
-  return (
+  return createPortal(
     <div
       ref={modalRef}
       className="fixed inset-0 z-[100] flex items-center justify-center bg-background/85 backdrop-blur-sm p-4"
@@ -649,7 +650,8 @@ function AuxiliaryTasksModal({
           loading={resetBusy}
         />
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

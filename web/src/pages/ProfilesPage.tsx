@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { ChevronDown, Pencil, Plus, Terminal, Trash2, Users, X } from "lucide-react";
 import spinners from "unicode-animations";
 import { H2 } from "@/components/NouiTypography";
@@ -262,74 +263,76 @@ export default function ProfilesPage() {
       />
 
       {/* Create profile modal */}
-      {createModalOpen && (
-        <div
-          ref={createModalRef}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-background/85 backdrop-blur-sm p-4"
-          onClick={(e) => e.target === e.currentTarget && setCreateModalOpen(false)}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="create-profile-title"
-        >
-          <div className="relative w-full max-w-md border border-border bg-card shadow-2xl flex flex-col">
-            <Button
-              ghost
-              size="icon"
-              onClick={() => setCreateModalOpen(false)}
-              className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
-              aria-label={t.common.close}
-            >
-              <X />
-            </Button>
-
-            <header className="p-5 pb-3 border-b border-border">
-              <h2
-                id="create-profile-title"
-                className="font-display text-base tracking-wider uppercase"
+      {createModalOpen &&
+        createPortal(
+          <div
+            ref={createModalRef}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-background/85 backdrop-blur-sm p-4"
+            onClick={(e) => e.target === e.currentTarget && setCreateModalOpen(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="create-profile-title"
+          >
+            <div className="relative w-full max-w-md border border-border bg-card shadow-2xl flex flex-col">
+              <Button
+                ghost
+                size="icon"
+                onClick={() => setCreateModalOpen(false)}
+                className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
+                aria-label={t.common.close}
               >
-                {t.profiles.newProfile}
-              </h2>
-            </header>
+                <X />
+              </Button>
 
-            <div className="p-5 grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="profile-name">{t.profiles.name}</Label>
-                <Input
-                  id="profile-name"
-                  autoFocus
-                  placeholder={t.profiles.namePlaceholder}
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleCreate();
-                  }}
-                  aria-invalid={
-                    newName.trim() !== "" &&
-                    !PROFILE_NAME_RE.test(newName.trim())
-                  }
+              <header className="p-5 pb-3 border-b border-border">
+                <h2
+                  id="create-profile-title"
+                  className="font-display text-base tracking-wider uppercase"
+                >
+                  {t.profiles.newProfile}
+                </h2>
+              </header>
+
+              <div className="p-5 grid gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="profile-name">{t.profiles.name}</Label>
+                  <Input
+                    id="profile-name"
+                    autoFocus
+                    placeholder={t.profiles.namePlaceholder}
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleCreate();
+                    }}
+                    aria-invalid={
+                      newName.trim() !== "" &&
+                      !PROFILE_NAME_RE.test(newName.trim())
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {t.profiles.nameRule}
+                  </p>
+                </div>
+
+                <Checkbox
+                  id="clone-from-default"
+                  checked={cloneFromDefault}
+                  onChange={(e) => setCloneFromDefault(e.target.checked)}
+                  label={t.profiles.cloneFromDefault}
                 />
-                <p className="text-xs text-muted-foreground">
-                  {t.profiles.nameRule}
-                </p>
-              </div>
 
-              <Checkbox
-                id="clone-from-default"
-                checked={cloneFromDefault}
-                onChange={(e) => setCloneFromDefault(e.target.checked)}
-                label={t.profiles.cloneFromDefault}
-              />
-
-              <div className="flex justify-end">
-                <Button size="sm" onClick={handleCreate} disabled={creating}>
-                  <Plus className="h-3 w-3" />
-                  {creating ? t.common.creating : t.common.create}
-                </Button>
+                <div className="flex justify-end">
+                  <Button size="sm" onClick={handleCreate} disabled={creating}>
+                    <Plus className="h-3 w-3" />
+                    {creating ? t.common.creating : t.common.create}
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
 
       {/* List */}
       <div className="flex flex-col gap-3">
