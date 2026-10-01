@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Clock, Pause, Play, Plus, Trash2, X, Zap } from "lucide-react";
 import { Badge } from "@nous-research/ui/ui/components/badge";
 import { Button } from "@nous-research/ui/ui/components/button";
@@ -273,124 +274,126 @@ export default function CronPage() {
       />
 
       {/* Create job modal */}
-      {createModalOpen && (
-        <div
-          ref={createModalRef}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-background/85 backdrop-blur-sm p-4"
-          onClick={(e) => e.target === e.currentTarget && setCreateModalOpen(false)}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="create-cron-title"
-        >
-          <div className="relative w-full max-w-lg border border-border bg-card shadow-2xl flex flex-col">
-            <Button
-              ghost
-              size="icon"
-              onClick={() => setCreateModalOpen(false)}
-              className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
-              aria-label={t.common.close}
-            >
-              <X />
-            </Button>
-
-            <header className="p-5 pb-3 border-b border-border">
-              <h2
-                id="create-cron-title"
-                className="font-display text-base tracking-wider uppercase"
+      {createModalOpen &&
+        createPortal(
+          <div
+            ref={createModalRef}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-background/85 backdrop-blur-sm p-4"
+            onClick={(e) => e.target === e.currentTarget && setCreateModalOpen(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="create-cron-title"
+          >
+            <div className="relative w-full max-w-lg border border-border bg-card shadow-2xl flex flex-col">
+              <Button
+                ghost
+                size="icon"
+                onClick={() => setCreateModalOpen(false)}
+                className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
+                aria-label={t.common.close}
               >
-                {t.cron.newJob}
-              </h2>
-            </header>
+                <X />
+              </Button>
 
-            <div className="p-5 grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="cron-profile">Profile</Label>
-                <Select
-                  id="cron-profile"
-                  value={createProfile}
-                  onValueChange={(v) => setSelectedProfile(v)}
+              <header className="p-5 pb-3 border-b border-border">
+                <h2
+                  id="create-cron-title"
+                  className="font-display text-base tracking-wider uppercase"
                 >
-                  {profiles.map((profile) => (
-                    <SelectOption key={profile.name} value={profile.name}>
-                      {profileLabel(profile.name)}
-                    </SelectOption>
-                  ))}
-                </Select>
-              </div>
+                  {t.cron.newJob}
+                </h2>
+              </header>
 
-              <div className="grid gap-2">
-                <Label htmlFor="cron-name">{t.cron.nameOptional}</Label>
-                <Input
-                  id="cron-name"
-                  autoFocus
-                  placeholder={t.cron.namePlaceholder}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <Label htmlFor="cron-prompt">{t.cron.prompt}</Label>
-                <textarea
-                  id="cron-prompt"
-                  className="flex min-h-[80px] w-full border border-border bg-background/40 px-3 py-2 text-sm font-courier shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground/30 focus-visible:border-foreground/25"
-                  placeholder={t.cron.promptPlaceholder}
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="p-5 grid gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="cron-schedule">{t.cron.schedule}</Label>
+                  <Label htmlFor="cron-profile">Profile</Label>
+                  <Select
+                    id="cron-profile"
+                    value={createProfile}
+                    onValueChange={(v) => setSelectedProfile(v)}
+                  >
+                    {profiles.map((profile) => (
+                      <SelectOption key={profile.name} value={profile.name}>
+                        {profileLabel(profile.name)}
+                      </SelectOption>
+                    ))}
+                  </Select>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="cron-name">{t.cron.nameOptional}</Label>
                   <Input
-                    id="cron-schedule"
-                    placeholder={t.cron.schedulePlaceholder}
-                    value={schedule}
-                    onChange={(e) => setSchedule(e.target.value)}
+                    id="cron-name"
+                    autoFocus
+                    placeholder={t.cron.namePlaceholder}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                   />
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="cron-deliver">{t.cron.deliverTo}</Label>
-                  <Select
-                    id="cron-deliver"
-                    value={deliver}
-                    onValueChange={(v) => setDeliver(v)}
+                  <Label htmlFor="cron-prompt">{t.cron.prompt}</Label>
+                  <textarea
+                    id="cron-prompt"
+                    className="flex min-h-[80px] w-full border border-border bg-background/40 px-3 py-2 text-sm font-courier shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground/30 focus-visible:border-foreground/25"
+                    placeholder={t.cron.promptPlaceholder}
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="cron-schedule">{t.cron.schedule}</Label>
+                    <Input
+                      id="cron-schedule"
+                      placeholder={t.cron.schedulePlaceholder}
+                      value={schedule}
+                      onChange={(e) => setSchedule(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label htmlFor="cron-deliver">{t.cron.deliverTo}</Label>
+                    <Select
+                      id="cron-deliver"
+                      value={deliver}
+                      onValueChange={(v) => setDeliver(v)}
+                    >
+                      <SelectOption value="local">
+                        {t.cron.delivery.local}
+                      </SelectOption>
+                      <SelectOption value="telegram">
+                        {t.cron.delivery.telegram}
+                      </SelectOption>
+                      <SelectOption value="discord">
+                        {t.cron.delivery.discord}
+                      </SelectOption>
+                      <SelectOption value="slack">
+                        {t.cron.delivery.slack}
+                      </SelectOption>
+                      <SelectOption value="email">
+                        {t.cron.delivery.email}
+                      </SelectOption>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    size="sm"
+                    onClick={handleCreate}
+                    disabled={creating}
+                    prefix={creating ? <Spinner /> : <Plus />}
                   >
-                    <SelectOption value="local">
-                      {t.cron.delivery.local}
-                    </SelectOption>
-                    <SelectOption value="telegram">
-                      {t.cron.delivery.telegram}
-                    </SelectOption>
-                    <SelectOption value="discord">
-                      {t.cron.delivery.discord}
-                    </SelectOption>
-                    <SelectOption value="slack">
-                      {t.cron.delivery.slack}
-                    </SelectOption>
-                    <SelectOption value="email">
-                      {t.cron.delivery.email}
-                    </SelectOption>
-                  </Select>
+                    {creating ? t.common.creating : t.common.create}
+                  </Button>
                 </div>
               </div>
-
-              <div className="flex justify-end">
-                <Button
-                  size="sm"
-                  onClick={handleCreate}
-                  disabled={creating}
-                  prefix={creating ? <Spinner /> : <Plus />}
-                >
-                  {creating ? t.common.creating : t.common.create}
-                </Button>
-              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
 
       <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
