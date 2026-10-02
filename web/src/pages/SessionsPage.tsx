@@ -308,8 +308,18 @@ function SessionRow({
       }`}
     >
       <div
-        className="flex cursor-pointer items-start gap-3 p-3 transition-colors hover:bg-secondary/30"
+        role="button"
+        tabIndex={0}
+        aria-expanded={isExpanded}
+        aria-label={`${isExpanded ? t.common.collapse : t.common.expand}: ${displayTitle}`}
+        className="flex cursor-pointer items-start gap-3 p-3 transition-colors hover:bg-secondary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
         onClick={onToggle}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onToggle();
+          }
+        }}
       >
         <div className={`shrink-0 pt-0.5 ${sourceInfo.color}`}>
           <SourceIcon className="h-4 w-4" />

@@ -33,3 +33,7 @@
 ## 2026-09-21 - Modal Portal Layering and Escape Key Dismissal
 **Learning:** OAuth and authentication modal dialogs rendered inside nested dashboard containers can be trapped in lower z-index stacking contexts below sidebar overlays, and omit `Escape` key listeners required by keyboard users to dismiss/cancel pending flows.
 **Action:** Always render top-level modal overlays using `createPortal(..., document.body)` and add a `keydown` event listener for `Escape` key dismissal.
+
+## 2026-09-22 - Keyboard Focus and ARIA Semantics on Expandable List Rows
+**Learning:** Clickable container elements used for expandable list items (e.g. `SessionRow` in `SessionsPage.tsx`) often use `onClick` without `role="button"`, `tabIndex={0}`, `aria-expanded`, or `onKeyDown` listeners, trapping keyboard users who cannot focus or toggle row details using `Tab` and `Enter`/`Space`.
+**Action:** Always convert interactive list item row headers into accessible button controls with `role="button"`, `tabIndex={0}`, `aria-expanded`, dynamic `aria-label`, `focus-visible` ring styles, and an `onKeyDown` listener handling `Enter` and `Space`.
