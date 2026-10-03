@@ -47,6 +47,7 @@ export function PlatformsCard({ platforms }: PlatformsCardProps) {
             >
               <div className="flex items-center gap-3 min-w-0 w-full">
                 <IconComponent
+                  aria-hidden="true"
                   className={`h-4 w-4 shrink-0 ${
                     info.state === "connected"
                       ? "text-success"
