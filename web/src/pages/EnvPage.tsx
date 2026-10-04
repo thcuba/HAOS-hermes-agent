@@ -382,9 +382,18 @@ function ProviderGroupCard({
     <div className="border border-border">
       {/* Header — always visible */}
       <ListItem
+        role="button"
+        tabIndex={0}
         onClick={() => setExpanded(!expanded)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setExpanded((v) => !v);
+          }
+        }}
         aria-expanded={expanded}
-        className="justify-between gap-3 px-4 py-3 hover:bg-primary/5"
+        aria-label={`${expanded ? t.common.collapse : t.common.expand}: ${group.name === "Other" ? t.common.other : group.name}`}
+        className="justify-between gap-3 px-4 py-3 hover:bg-primary/5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
       >
         <div className="flex items-center gap-3 min-w-0">
           {expanded ? (
@@ -409,6 +418,7 @@ function ProviderGroupCard({
               rel="noreferrer"
               className="inline-flex items-center gap-1 text-[0.65rem] text-primary hover:underline"
               onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
             >
               {t.env.getKey} <ExternalLink className="h-2.5 w-2.5" />
             </a>
