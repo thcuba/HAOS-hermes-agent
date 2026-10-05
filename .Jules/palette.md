@@ -37,3 +37,7 @@
 ## 2026-09-22 - Keyboard Focus and ARIA Semantics on Expandable List Rows
 **Learning:** Clickable container elements used for expandable list items (e.g. `SessionRow` in `SessionsPage.tsx`) often use `onClick` without `role="button"`, `tabIndex={0}`, `aria-expanded`, or `onKeyDown` listeners, trapping keyboard users who cannot focus or toggle row details using `Tab` and `Enter`/`Space`.
 **Action:** Always convert interactive list item row headers into accessible button controls with `role="button"`, `tabIndex={0}`, `aria-expanded`, dynamic `aria-label`, `focus-visible` ring styles, and an `onKeyDown` listener handling `Enter` and `Space`.
+
+## 2026-09-23 - External Link Target ARIA Announcements
+**Learning:** External links configured with `target="_blank"` without explicit screen reader cues leave visually impaired users unaware that activating the link opens a new tab or window.
+**Action:** Always provide an explicit `aria-label` stating that activating the external link opens in a new tab (e.g., `aria-label={`${title} (opens in new tab)`}`).

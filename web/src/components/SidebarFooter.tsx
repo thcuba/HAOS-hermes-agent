@@ -26,6 +26,7 @@ export function SidebarFooter() {
         href="https://nousresearch.com"
         target="_blank"
         rel="noopener noreferrer"
+        aria-label={`${t.app.footer.org} (opens in new tab)`}
         className={cn(
           "font-mondwest text-[0.65rem] tracking-[0.15em] text-midground",
           "transition-opacity hover:opacity-90",
