@@ -297,8 +297,12 @@ export function ModelPickerDialog(props: Props) {
               Saves to config.yaml — applies to new sessions.
             </span>
           ) : (
-            <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer select-none">
+            <label
+              htmlFor="persist-global-checkbox"
+              className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer select-none"
+            >
               <input
+                id="persist-global-checkbox"
                 type="checkbox"
                 checked={persistGlobal}
                 onChange={(e) => setPersistGlobal(e.target.checked)}
@@ -312,7 +316,11 @@ export function ModelPickerDialog(props: Props) {
             <Button outlined onClick={onClose} disabled={applying}>
               {t.common.cancel}
             </Button>
-            <Button onClick={confirm} disabled={!canConfirm}>
+            <Button
+              onClick={confirm}
+              disabled={!canConfirm}
+              aria-busy={applying}
+            >
               {applying ? <Spinner /> : "Switch"}
             </Button>
           </div>
