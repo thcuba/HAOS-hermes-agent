@@ -135,6 +135,7 @@ export const SlashPopover = forwardRef<SlashPopoverHandle, Props>(
       <div
         className="absolute bottom-full left-0 right-0 mb-2 max-h-64 overflow-y-auto rounded-md border border-border bg-popover shadow-xl text-sm"
         role="listbox"
+        aria-label="Slash commands"
       >
         {items.map((it, i) => {
           const active = i === selected;
