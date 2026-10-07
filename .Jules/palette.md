@@ -41,3 +41,7 @@
 ## 2026-09-23 - External Link Target ARIA Announcements
 **Learning:** External links configured with `target="_blank"` without explicit screen reader cues leave visually impaired users unaware that activating the link opens a new tab or window.
 **Action:** Always provide an explicit `aria-label` stating that activating the external link opens in a new tab (e.g., `aria-label={`${title} (opens in new tab)`}`).
+
+## 2026-09-24 - Focus Visible Styles on Dropdown Options and Keyboard Modal Confirmation
+**Learning:** Dropdown or popup list options (e.g., in `LanguageSwitcher.tsx`) often specify hover styles without `focus-visible` ring/background styles, hiding focus states from keyboard users. Additionally, modal picker lists benefit from handling `Enter` key presses on active items to trigger confirmation without requiring additional Tab navigation.
+**Action:** Include `focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring` on list option controls, and trigger confirmation on `Enter` when an option is already active.

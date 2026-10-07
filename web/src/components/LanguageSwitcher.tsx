@@ -134,10 +134,10 @@ function LanguageSwitcherOptions({
         return (
           <button
             aria-selected={selected}
-            className={
-              "w-full text-left px-3 py-1.5 text-xs flex items-center gap-2 hover:bg-accent hover:text-accent-foreground transition-colors " +
-              (selected ? "font-semibold text-foreground" : "text-muted-foreground")
-            }
+            className={cn(
+              "w-full text-left px-3 py-1.5 text-xs flex items-center gap-2 hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring transition-colors",
+              selected ? "font-semibold text-foreground" : "text-muted-foreground",
+            )}
             key={code}
             onClick={() => {
               setLocale(code);
