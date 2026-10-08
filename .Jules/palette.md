@@ -45,3 +45,7 @@
 ## 2026-09-24 - Focus Visible Styles on Dropdown Options and Keyboard Modal Confirmation
 **Learning:** Dropdown or popup list options (e.g., in `LanguageSwitcher.tsx`) often specify hover styles without `focus-visible` ring/background styles, hiding focus states from keyboard users. Additionally, modal picker lists benefit from handling `Enter` key presses on active items to trigger confirmation without requiring additional Tab navigation.
 **Action:** Include `focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring` on list option controls, and trigger confirmation on `Enter` when an option is already active.
+
+## 2026-09-25 - Search and Filter Input Association and ARIA Labels
+**Learning:** Toolbar and modal filter inputs (such as search boxes in `ModelPickerDialog` and `ConfigPage`) often rely solely on placeholder text and adjacent search icons without explicit `id` attributes or `aria-label` bindings, causing screen readers to announce unlabelled text fields.
+**Action:** Always assign explicit `id` attributes and explicit `aria-label` (or `<Label htmlFor={id}>`) bindings to search and filter inputs across modal overlays and header toolbars.
