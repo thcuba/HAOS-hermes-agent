@@ -477,7 +477,11 @@ function ModelColumn({
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
-                  onSelect(m);
+                  if (active && e.key === "Enter") {
+                    onConfirm(m);
+                  } else {
+                    onSelect(m);
+                  }
                 }
               }}
               className="px-3 py-1.5 text-xs font-mono"
