@@ -49,3 +49,7 @@
 ## 2026-09-25 - Search and Filter Input Association and ARIA Labels
 **Learning:** Toolbar and modal filter inputs (such as search boxes in `ModelPickerDialog` and `ConfigPage`) often rely solely on placeholder text and adjacent search icons without explicit `id` attributes or `aria-label` bindings, causing screen readers to announce unlabelled text fields.
 **Action:** Always assign explicit `id` attributes and explicit `aria-label` (or `<Label htmlFor={id}>`) bindings to search and filter inputs across modal overlays and header toolbars.
+
+## 2026-09-26 - Expandable Panel ARIA Attributes and Async Button Feedback
+**Learning:** Inline editor toggles and expandable panels (such as profile SOUL editors in `ProfilesPage.tsx`) often omit `aria-expanded` and `aria-controls`, leaving screen reader users unaware when sub-panels open or close. Additionally, primary form submission buttons can lack `aria-busy` and animated `<Spinner />` feedback during pending async calls.
+**Action:** Always apply `aria-expanded` and `aria-controls` to inline disclosure toggle buttons, and include `aria-busy` along with a `<Spinner />` prefix on async submit buttons during pending states.

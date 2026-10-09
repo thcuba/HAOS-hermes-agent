@@ -13,6 +13,7 @@ import { Toast } from "@/components/Toast";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@nous-research/ui/ui/components/badge";
 import { Button } from "@nous-research/ui/ui/components/button";
+import { Spinner } from "@nous-research/ui/ui/components/spinner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -323,8 +324,13 @@ export default function ProfilesPage() {
                 />
 
                 <div className="flex justify-end">
-                  <Button size="sm" onClick={handleCreate} disabled={creating}>
-                    <Plus className="h-3 w-3" />
+                  <Button
+                    size="sm"
+                    onClick={handleCreate}
+                    disabled={creating}
+                    aria-busy={creating}
+                    prefix={creating ? <Spinner /> : <Plus className="h-3 w-3" />}
+                  >
                     {creating ? t.common.creating : t.common.create}
                   </Button>
                 </div>
@@ -450,6 +456,8 @@ export default function ProfilesPage() {
                         size="icon"
                         title={t.profiles.editSoul}
                         aria-label={`${t.profiles.editSoul}: ${p.name}`}
+                        aria-expanded={isEditingSoul}
+                        aria-controls={`soul-editor-${p.name}`}
                         onClick={() => openSoulEditor(p.name)}
                       >
                         {isEditingSoul ? (
@@ -519,6 +527,8 @@ export default function ProfilesPage() {
                       size="sm"
                       onClick={() => handleSaveSoul(p.name)}
                       disabled={soulSaving}
+                      aria-busy={soulSaving}
+                      prefix={soulSaving ? <Spinner /> : undefined}
                     >
                       {soulSaving ? t.common.saving : t.profiles.saveSoul}
                     </Button>
