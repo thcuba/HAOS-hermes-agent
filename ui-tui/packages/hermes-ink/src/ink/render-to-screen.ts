@@ -11,7 +11,6 @@ import reconciler from './reconciler.js'
 import renderNodeToOutput, { resetLayoutShifted } from './render-node-to-output.js'
 import {
   cellAtIndex,
-  CellWidth,
   CharPool,
   createScreen,
   HyperlinkPool,
@@ -19,6 +18,7 @@ import {
   setCellStyleId,
   StylePool
 } from './screen.js'
+import { buildRowSearchText } from './searchHighlight.js'
 
 /** Position of a match within a rendered message, relative to the message's
  *  own bounding box (row 0 = message top). Stable across scroll — to
@@ -147,33 +147,7 @@ export function scanPositions(screen: Screen, query: string): MatchPosition[] {
 
   for (let row = 0; row < h; row++) {
     const rowOff = row * w
-    // Same text-build as applySearchHighlight. Keep in sync — or extract
-    // to a shared helper (TODO once both are stable). codeUnitToCell
-    // maps indexOf positions (code units in the LOWERCASED text) to cell
-    // indices in colOf — surrogate pairs (emoji) and multi-unit lowercase
-    // (Turkish İ → i + U+0307) make text.length > colOf.length.
-    let text = ''
-    const colOf: number[] = []
-    const codeUnitToCell: number[] = []
-
-    for (let col = 0; col < w; col++) {
-      const idx = rowOff + col
-      const cell = cellAtIndex(screen, idx)
-
-      if (cell.width === CellWidth.SpacerTail || cell.width === CellWidth.SpacerHead || noSelect[idx] === 1) {
-        continue
-      }
-
-      const lc = cell.char.toLowerCase()
-      const cellIdx = colOf.length
-
-      for (let i = 0; i < lc.length; i++) {
-        codeUnitToCell.push(cellIdx)
-      }
-
-      text += lc
-      colOf.push(col)
-    }
+    const { text, colOf, codeUnitToCell } = buildRowSearchText(screen, row)
 
     // Non-overlapping — same advance as applySearchHighlight.
     let pos = text.indexOf(lq)
