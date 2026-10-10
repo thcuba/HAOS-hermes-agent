@@ -149,11 +149,19 @@ function ThemeSwitcherOptions({
           <ListItem
             active={isActive}
             aria-selected={isActive}
-            className="gap-3"
+            className="gap-3 cursor-pointer focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             key={th.name}
+            tabIndex={0}
             onClick={() => {
               setTheme(th.name);
               close();
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setTheme(th.name);
+                close();
+              }
             }}
             role="option"
           >
