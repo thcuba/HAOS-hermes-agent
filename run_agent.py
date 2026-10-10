@@ -107,7 +107,7 @@ from model_tools import (
     handle_function_call,
     check_toolset_requirements,
 )
-from tools.terminal_tool import cleanup_vm, get_active_env, is_persistent_env
+from tools.terminal_tool import cleanup_vm, is_persistent_env
 from tools.terminal_tool import (
     set_approval_callback as _set_approval_callback,
     set_sudo_password_callback as _set_sudo_password_callback,
