@@ -33,7 +33,6 @@ except ModuleNotFoundError:
 
 import asyncio
 import base64
-import concurrent.futures
 import contextvars
 import copy
 import hashlib
