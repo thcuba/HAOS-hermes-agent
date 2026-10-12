@@ -140,6 +140,8 @@ def get_all_passthrough() -> frozenset[str]:
 
 def clear_env_passthrough() -> None:
     """Reset the skill-scoped allowlist (e.g. on session reset)."""
+    global _config_passthrough
     _get_allowed().clear()
+    _config_passthrough = None
 
 
