@@ -1882,10 +1882,10 @@ async def _start_device_code_flow(provider_id: str) -> Dict[str, Any]:
         # so we run the full helper in a worker and proxy the user_code +
         # verification_url back via the session dict. The helper prints
         # to stdout — we capture nothing here, just status.
-        threading.Thread(
-            target=_codex_full_login_worker, args=(sid,), daemon=True,
+        asyncio.create_task(
+            _codex_full_login_worker(sid),
             name=f"oauth-codex-{sid[:6]}",
-        ).start()
+        )
         # Block briefly until the worker has populated the user_code, OR error.
         deadline = time.monotonic() + 10
         while time.monotonic() < deadline:
@@ -2137,7 +2137,7 @@ def _minimax_poller(session_id: str) -> None:
             sess["error_message"] = str(e)
 
 
-def _codex_full_login_worker(session_id: str) -> None:
+async def _codex_full_login_worker(session_id: str) -> None:
     """Run the complete OpenAI Codex device-code flow.
 
     Codex doesn't use the standard OAuth device-code endpoints; it has its
@@ -2162,8 +2162,8 @@ def _codex_full_login_worker(session_id: str) -> None:
         issuer = "https://auth.openai.com"
 
         # Step 1: request device code
-        with httpx.Client(timeout=httpx.Timeout(15.0)) as client:
-            resp = client.post(
+        async with httpx.AsyncClient(timeout=httpx.Timeout(15.0)) as client:
+            resp = await client.post(
                 f"{issuer}/api/accounts/deviceauth/usercode",
                 json={"client_id": CODEX_OAUTH_CLIENT_ID},
                 headers={"Content-Type": "application/json"},
@@ -2191,10 +2191,10 @@ def _codex_full_login_worker(session_id: str) -> None:
         # Step 2: poll until authorized
         deadline = time.monotonic() + sess["expires_in"]
         code_resp = None
-        with httpx.Client(timeout=httpx.Timeout(15.0)) as client:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(15.0)) as client:
             while time.monotonic() < deadline:
-                time.sleep(poll_interval)
-                poll = client.post(
+                await asyncio.sleep(poll_interval)
+                poll = await client.post(
                     f"{issuer}/api/accounts/deviceauth/token",
                     json={"device_auth_id": device_auth_id, "user_code": user_code},
                     headers={"Content-Type": "application/json"},
@@ -2217,8 +2217,8 @@ def _codex_full_login_worker(session_id: str) -> None:
         code_verifier = code_resp.get("code_verifier", "")
         if not authorization_code or not code_verifier:
             raise RuntimeError("device-auth response missing authorization_code/code_verifier")
-        with httpx.Client(timeout=httpx.Timeout(15.0)) as client:
-            token_resp = client.post(
+        async with httpx.AsyncClient(timeout=httpx.Timeout(15.0)) as client:
+            token_resp = await client.post(
                 CODEX_OAUTH_TOKEN_URL,
                 data={
                     "grant_type": "authorization_code",
