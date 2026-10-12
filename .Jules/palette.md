@@ -49,3 +49,7 @@
 ## 2026-09-25 - Search and Filter Input Association and ARIA Labels
 **Learning:** Toolbar and modal filter inputs (such as search boxes in `ModelPickerDialog` and `ConfigPage`) often rely solely on placeholder text and adjacent search icons without explicit `id` attributes or `aria-label` bindings, causing screen readers to announce unlabelled text fields.
 **Action:** Always assign explicit `id` attributes and explicit `aria-label` (or `<Label htmlFor={id}>`) bindings to search and filter inputs across modal overlays and header toolbars.
+
+## 2026-09-26 - Bottom Sheet Escape Key Dismissal and ARIA Title Binding
+**Learning:** Portaled bottom sheet picker shells (`BottomPickSheet.tsx`) used for mobile dropdowns often handle downward touch drags and backdrop clicks, but omit `Escape` key event listeners and `aria-labelledby` title associations, leaving keyboard users unable to close bottom sheets and screen readers without clear section title context.
+**Action:** Always include a `keydown` listener for `Escape` key dismissal and associate `aria-labelledby` with an explicit `id` on the sheet title header in portaled bottom sheets.

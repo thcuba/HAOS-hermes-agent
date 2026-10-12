@@ -103,6 +103,20 @@ export function BottomPickSheet({
     };
   }, [renderPortal]);
 
+  useEffect(() => {
+    if (!renderPortal) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [renderPortal, onClose]);
+
   if (!renderPortal || typeof document === "undefined") return null;
 
   const durationClass = reducedMotion ? "duration-0" : "duration-[280ms]";
@@ -164,7 +178,7 @@ export function BottomPickSheet({
       />
 
       <div
-        aria-label={title}
+        aria-labelledby="bottom-pick-sheet-title"
         aria-modal="true"
         ref={sheetRef}
         className={cn(
@@ -199,6 +213,7 @@ export function BottomPickSheet({
           />
 
           <Typography
+            id="bottom-pick-sheet-title"
             mondwest
             className="text-[0.65rem] tracking-[0.15em] uppercase text-midground/70"
           >
