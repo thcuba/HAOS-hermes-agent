@@ -235,6 +235,9 @@ function UseAsMenu({
         outlined
         onClick={() => setOpen((v) => !v)}
         disabled={busy}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        aria-label={`Use ${shortModelName(model)} as`}
         className="text-[10px] h-6 px-2"
         prefix={busy ? <Spinner /> : null}
       >
@@ -492,6 +495,7 @@ function AuxiliaryTasksModal({
   onSaved(): void;
   onClose(): void;
 }) {
+  const { t } = useI18n();
   const [picker, setPicker] = useState<PickerTarget | null>(null);
   const [resetBusy, setResetBusy] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
@@ -528,7 +532,7 @@ function AuxiliaryTasksModal({
           size="icon"
           onClick={onClose}
           className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
-          aria-label="Close"
+          aria-label={t.common.close}
         >
           <X />
         </Button>
