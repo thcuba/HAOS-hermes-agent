@@ -48,7 +48,6 @@ import tempfile
 import time
 import threading
 from types import SimpleNamespace
-import urllib.request
 import uuid
 from typing import List, Dict, Any, Optional, Callable
 from urllib.parse import urlparse, parse_qs, urlunparse
