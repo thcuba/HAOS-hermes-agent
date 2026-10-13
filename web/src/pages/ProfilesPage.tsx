@@ -13,6 +13,7 @@ import { Toast } from "@/components/Toast";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@nous-research/ui/ui/components/badge";
 import { Button } from "@nous-research/ui/ui/components/button";
+import { Spinner } from "@nous-research/ui/ui/components/spinner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -450,6 +451,8 @@ export default function ProfilesPage() {
                         size="icon"
                         title={t.profiles.editSoul}
                         aria-label={`${t.profiles.editSoul}: ${p.name}`}
+                        aria-expanded={isEditingSoul}
+                        aria-controls={`soul-editor-panel-${p.name}`}
                         onClick={() => openSoulEditor(p.name)}
                       >
                         {isEditingSoul ? (
@@ -500,15 +503,18 @@ export default function ProfilesPage() {
               </CardContent>
 
               {isEditingSoul && (
-                <div className="border-t border-border px-4 pb-4 pt-3 flex flex-col gap-2">
+                <div
+                  id={`soul-editor-panel-${p.name}`}
+                  className="border-t border-border px-4 pb-4 pt-3 flex flex-col gap-2"
+                >
                   <Label
-                    htmlFor={`soul-editor-${p.name}`}
+                    htmlFor={`soul-editor-textarea-${p.name}`}
                     className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground"
                   >
                     {t.profiles.soulSection}
                   </Label>
                   <textarea
-                    id={`soul-editor-${p.name}`}
+                    id={`soul-editor-textarea-${p.name}`}
                     className="flex min-h-[180px] w-full border border-input bg-transparent px-3 py-2 text-sm font-mono shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                     placeholder={t.profiles.soulPlaceholder}
                     value={soulText}
@@ -519,6 +525,8 @@ export default function ProfilesPage() {
                       size="sm"
                       onClick={() => handleSaveSoul(p.name)}
                       disabled={soulSaving}
+                      aria-busy={soulSaving}
+                      prefix={soulSaving ? <Spinner /> : null}
                     >
                       {soulSaving ? t.common.saving : t.profiles.saveSoul}
                     </Button>
