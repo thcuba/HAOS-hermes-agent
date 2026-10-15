@@ -328,6 +328,7 @@ export function ChatSidebar({ channel, className }: ChatSidebarProps) {
             title={info.model ?? "switch model"}
             aria-haspopup="dialog"
             aria-expanded={modelOpen}
+            aria-label={`Current model: ${info.model ?? "default"}. Click to switch model`}
           >
             <span className="truncate">{modelLabel}</span>
           </Button>

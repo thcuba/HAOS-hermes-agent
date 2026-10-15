@@ -53,3 +53,7 @@
 ## 2026-09-26 - Bottom Sheet Escape Key Dismissal and ARIA Title Binding
 **Learning:** Portaled bottom sheet picker shells (`BottomPickSheet.tsx`) used for mobile dropdowns often handle downward touch drags and backdrop clicks, but omit `Escape` key event listeners and `aria-labelledby` title associations, leaving keyboard users unable to close bottom sheets and screen readers without clear section title context.
 **Action:** Always include a `keydown` listener for `Escape` key dismissal and associate `aria-labelledby` with an explicit `id` on the sheet title header in portaled bottom sheets.
+
+## 2026-09-27 - ChatSidebar Model Switcher Button ARIA Label
+**Learning:** Model switcher trigger buttons in sidebars (such as in `ChatSidebar.tsx`) display truncated model strings or badges and may include `title` attributes, but screen readers require an explicit `aria-label` stating both the active model context and the action prompt (e.g. `Current model: ... Click to switch model`) to provide complete accessible control context.
+**Action:** Always supply an explicit `aria-label` on model selector buttons that describes the active model and indicates that activating the button opens the model selection dialog.
