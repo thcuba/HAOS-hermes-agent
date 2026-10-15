@@ -11,7 +11,7 @@ import { Switch } from "@nous-research/ui/ui/components/switch";
 import { Spinner } from "@nous-research/ui/ui/components/spinner";
 import { CommandBlock } from "@nous-research/ui/ui/components/command-block";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { DeleteConfirmDialog } from "@/components/DeleteConfirmDialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/useToast";
@@ -581,20 +581,19 @@ function PluginRowCard(props: PluginRowCardProps) {
         ) : null}
       </CardContent>
 
-      <ConfirmDialog
+      <DeleteConfirmDialog
         open={confirmRemove}
+        loading={busy}
         onCancel={() => setConfirmRemove(false)}
         onConfirm={() => {
-          setConfirmRemove(false);
           void setRuntimeLoading(row.name, async () => {
             await api.removeAgentPlugin(row.name);
             showToast(`${row.name} removed`, "success");
+            setConfirmRemove(false);
           });
         }}
         title={t.pluginsPage.removeConfirm}
         description={`This will remove the "${row.name}" plugin from your agent.`}
-        destructive
-        confirmLabel={t.common.delete}
       />
     </Card>
   );
