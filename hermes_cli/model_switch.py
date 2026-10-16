@@ -805,7 +805,7 @@ def switch_model(
         # whose live /v1/models returns bare IDs (e.g. "deepseek-v4-flash") that
         # coincidentally match entries in native providers' static catalogs.
         resolved_in_current_catalog = False
-        if is_aggregator(target_provider) and not resolved_alias:
+        if (is_aggregator(target_provider) or target_provider in {"opencode-go", "opencode-zen"}) and not resolved_alias:
             catalog = list_provider_models(target_provider)
             if catalog:
                 new_model_lower = new_model.lower()
