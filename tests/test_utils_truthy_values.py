@@ -27,3 +27,22 @@ def test_env_var_enabled_uses_shared_truthy_rules(monkeypatch):
 
     monkeypatch.setenv("HERMES_TEST_BOOL", "no")
     assert env_var_enabled("HERMES_TEST_BOOL") is False
+
+
+def test_extract_json_blob():
+    from utils import extract_json_blob
+
+    # Plain JSON
+    assert extract_json_blob('{"title": "T", "body": "B"}') == {"title": "T", "body": "B"}
+
+    # Code-fenced JSON
+    assert extract_json_blob('```json\n{"title": "T", "body": "B"}\n```') == {"title": "T", "body": "B"}
+
+    # Prose preamble/suffix
+    assert extract_json_blob('Here is the json:\n```\n{"title": "T", "body": "B"}\n```\nThanks') == {"title": "T", "body": "B"}
+
+    # Unparseable / Invalid inputs
+    assert extract_json_blob("no json here") is None
+    assert extract_json_blob("") is None
+    assert extract_json_blob("{not: valid}") is None
+    assert extract_json_blob('["a", "list"]') is None
