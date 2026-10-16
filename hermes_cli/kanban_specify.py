@@ -38,6 +38,7 @@ import re
 from dataclasses import dataclass
 from typing import Optional
 
+from utils import extract_json_blob
 from hermes_cli import kanban_db as kb
 
 HERMES_KANBAN_SPECIFY_MAX_TOKENS = max(
@@ -103,28 +104,9 @@ def _truncate(text: str, limit: int) -> str:
     return text[: limit - 1] + "…"
 
 
-_FENCE_RE = re.compile(r"^\s*```(?:json)?\s*|\s*```\s*$", re.IGNORECASE)
 
 
-def _extract_json_blob(raw: str) -> Optional[dict]:
-    """Lenient JSON extraction — tolerates fenced code blocks and
-    leading/trailing whitespace. Returns None if nothing parses."""
-    if not raw:
-        return None
-    stripped = _FENCE_RE.sub("", raw.strip())
-    # Greedy: find the first `{` and last `}` and try that slice.
-    first = stripped.find("{")
-    last = stripped.rfind("}")
-    if first == -1 or last == -1 or last <= first:
-        return None
-    candidate = stripped[first : last + 1]
-    try:
-        val = json.loads(candidate)
-    except (ValueError, json.JSONDecodeError):
-        return None
-    if not isinstance(val, dict):
-        return None
-    return val
+_extract_json_blob = extract_json_blob
 
 
 def _profile_author() -> str:

@@ -34,6 +34,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
+from utils import extract_json_blob
 from hermes_cli import profiles as profiles_mod
 
 logger = logging.getLogger(__name__)
@@ -84,7 +85,6 @@ Notable skills (up to {skill_cap}):
 """
 
 
-_FENCE_RE = re.compile(r"^```(?:json)?\s*|\s*```$", re.MULTILINE)
 
 
 @dataclass
@@ -136,22 +136,7 @@ def _collect_skills(profile_dir: Path) -> list[str]:
     return sampled
 
 
-def _extract_json_blob(raw: str) -> Optional[dict]:
-    if not raw:
-        return None
-    stripped = _FENCE_RE.sub("", raw.strip())
-    first = stripped.find("{")
-    last = stripped.rfind("}")
-    if first == -1 or last == -1 or last <= first:
-        return None
-    candidate = stripped[first : last + 1]
-    try:
-        val = json.loads(candidate)
-    except (ValueError, json.JSONDecodeError):
-        return None
-    if not isinstance(val, dict):
-        return None
-    return val
+_extract_json_blob = extract_json_blob
 
 
 def describe_profile(

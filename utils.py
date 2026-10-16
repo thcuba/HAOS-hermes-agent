@@ -1,12 +1,13 @@
 """Shared utility functions for hermes-agent."""
 
 import json
+import re
 import logging
 import os
 import stat
 import tempfile
 from pathlib import Path
-from typing import Any, Union
+from typing import Any, Optional, Union
 from urllib.parse import urlparse
 
 import yaml
@@ -253,6 +254,32 @@ def atomic_roundtrip_yaml_update(
 
 
 # ─── JSON Helpers ─────────────────────────────────────────────────────────────
+
+_FENCE_RE = re.compile(r"^\s*```(?:json)?\s*|\s*```\s*$", re.IGNORECASE)
+
+
+def extract_json_blob(raw: str) -> Optional[dict]:
+    """Lenient JSON extraction — tolerates fenced code blocks and
+    leading/trailing whitespace. Returns None if nothing parses or if
+    the parsed result is not a dictionary.
+    """
+    if not raw:
+        return None
+    stripped = _FENCE_RE.sub("", raw.strip())
+    first = stripped.find("{")
+    last = stripped.rfind("}")
+    if first == -1 or last == -1 or last <= first:
+        return None
+    candidate = stripped[first : last + 1]
+    try:
+        val = json.loads(candidate)
+    except (ValueError, json.JSONDecodeError):
+        return None
+    if not isinstance(val, dict):
+        return None
+    return val
+
+
 
 
 def safe_json_loads(text: str, default: Any = None) -> Any:
