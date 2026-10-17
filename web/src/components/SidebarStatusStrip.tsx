@@ -19,11 +19,13 @@ export function SidebarStatusStrip() {
 
   const gw = gatewayLine(status, t);
   const { activeSessionsLabel, gatewayStatusLabel } = t.app;
+  const statusSummaryText = `${t.app.statusOverview}: ${gatewayStatusLabel} ${gw.label}, ${activeSessionsLabel} ${status.active_sessions}`;
 
   return (
     <Link
       to="/sessions"
       title={t.app.statusOverview}
+      aria-label={statusSummaryText}
       className={cn(
         "block text-left",
         "px-5 pb-2 pt-0.5",
