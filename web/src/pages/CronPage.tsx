@@ -117,6 +117,7 @@ export default function CronPage() {
   });
   const [deliver, setDeliver] = useState("local");
   const [creating, setCreating] = useState(false);
+  const [actionBusyKey, setActionBusyKey] = useState<string | null>(null);
   const createProfile = selectedProfile === "all" ? "default" : selectedProfile;
 
   const loadJobs = useCallback(() => {
@@ -169,6 +170,8 @@ export default function CronPage() {
   };
 
   const handlePauseResume = async (job: CronJob) => {
+    const key = `${getJobKey(job)}:pause`;
+    setActionBusyKey(key);
     try {
       const isPaused = getJobState(job) === "paused";
       const profile = getJobProfile(job);
@@ -188,10 +191,14 @@ export default function CronPage() {
       loadJobs();
     } catch (e) {
       showToast(`${t.status.error}: ${e}`, "error");
+    } finally {
+      setActionBusyKey(null);
     }
   };
 
   const handleTrigger = async (job: CronJob) => {
+    const key = `${getJobKey(job)}:trigger`;
+    setActionBusyKey(key);
     try {
       await api.triggerCronJob(job.id, getJobProfile(job));
       showToast(
@@ -201,6 +208,8 @@ export default function CronPage() {
       loadJobs();
     } catch (e) {
       showToast(`${t.status.error}: ${e}`, "error");
+    } finally {
+      setActionBusyKey(null);
     }
   };
 
@@ -438,6 +447,9 @@ export default function CronPage() {
           const deliver = asText(job.deliver);
           const profile = getJobProfile(job);
           const jobKey = getJobKey(job);
+          const isPauseBusy = actionBusyKey === `${jobKey}:pause`;
+          const isTriggerBusy = actionBusyKey === `${jobKey}:trigger`;
+          const isRowBusy = Boolean(actionBusyKey?.startsWith(`${jobKey}:`));
 
           return (
             <Card key={jobKey}>
@@ -480,6 +492,8 @@ export default function CronPage() {
                   <Button
                     ghost
                     size="icon"
+                    disabled={isRowBusy}
+                    aria-busy={isPauseBusy}
                     title={state === "paused" ? t.cron.resume : t.cron.pause}
                     aria-label={
                       state === "paused"
@@ -491,23 +505,32 @@ export default function CronPage() {
                       state === "paused" ? "text-success" : "text-warning"
                     }
                   >
-                    {state === "paused" ? <Play /> : <Pause />}
+                    {isPauseBusy ? (
+                      <Spinner className="h-4 w-4" />
+                    ) : state === "paused" ? (
+                      <Play />
+                    ) : (
+                      <Pause />
+                    )}
                   </Button>
 
                   <Button
                     ghost
                     size="icon"
+                    disabled={isRowBusy}
+                    aria-busy={isTriggerBusy}
                     title={t.cron.triggerNow}
                     aria-label={`${t.cron.triggerNow}: ${title}`}
                     onClick={() => handleTrigger(job)}
                   >
-                    <Zap />
+                    {isTriggerBusy ? <Spinner className="h-4 w-4" /> : <Zap />}
                   </Button>
 
                   <Button
                     ghost
                     destructive
                     size="icon"
+                    disabled={isRowBusy}
                     title={t.common.delete}
                     aria-label={`${t.common.delete}: ${title}`}
                     onClick={() => jobDelete.requestDelete(jobKey)}

@@ -57,3 +57,7 @@
 ## 2026-09-27 - ChatSidebar Model Switcher Button ARIA Label
 **Learning:** Model switcher trigger buttons in sidebars (such as in `ChatSidebar.tsx`) display truncated model strings or badges and may include `title` attributes, but screen readers require an explicit `aria-label` stating both the active model context and the action prompt (e.g. `Current model: ... Click to switch model`) to provide complete accessible control context.
 **Action:** Always supply an explicit `aria-label` on model selector buttons that describes the active model and indicates that activating the button opens the model selection dialog.
+
+## 2026-09-28 - Per-Item Async Pending States and ARIA Busy Attributes in List Item Rows
+**Learning:** List item action buttons that trigger async operations (e.g. pause/resume or trigger now in `CronPage.tsx`) can leave users without immediate visual feedback during network calls and allow duplicate clicks. Tracking pending states scoped to the specific item key (`${jobKey}:${action}`) allows rendering an animated `<Spinner />`, setting `disabled`, and attaching `aria-busy` to only the affected row.
+**Action:** Always scope async action pending states to specific item keys rather than global boolean flags to keep non-target list rows interactive while providing clear visual and screen-reader feedback for active operations.
