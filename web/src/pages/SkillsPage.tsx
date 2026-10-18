@@ -114,7 +114,7 @@ export default function SkillsPage() {
       })
       .catch(() => showToast(t.common.loading, "error"))
       .finally(() => setLoading(false));
-  }, []);
+  }, [showToast, t.common.loading]);
 
   /* ---- Toggle skill ---- */
   const handleToggleSkill = async (skill: SkillInfo) => {
@@ -503,8 +503,11 @@ function SkillRow({
 }: SkillRowProps) {
   const switchId = `skill-toggle-${skill.name}`;
   return (
-    <div className="group flex items-start gap-3 px-3 py-2.5 transition-colors hover:bg-muted/40">
-      <div className="pt-0.5 shrink-0">
+    <div
+      className="group flex items-start gap-3 px-3 py-2.5 transition-colors hover:bg-muted/40"
+      aria-busy={toggling}
+    >
+      <div className="pt-0.5 shrink-0 flex items-center gap-2">
         <Switch
           id={switchId}
           checked={skill.enabled}
@@ -512,6 +515,7 @@ function SkillRow({
           disabled={toggling}
           aria-label={skill.name}
         />
+        {toggling && <Spinner className="h-3.5 w-3.5 text-primary shrink-0" />}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-0.5">

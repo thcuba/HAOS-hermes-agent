@@ -61,3 +61,7 @@
 ## 2026-09-28 - Per-Item Async Pending States and ARIA Busy Attributes in List Item Rows
 **Learning:** List item action buttons that trigger async operations (e.g. pause/resume or trigger now in `CronPage.tsx`) can leave users without immediate visual feedback during network calls and allow duplicate clicks. Tracking pending states scoped to the specific item key (`${jobKey}:${action}`) allows rendering an animated `<Spinner />`, setting `disabled`, and attaching `aria-busy` to only the affected row.
 **Action:** Always scope async action pending states to specific item keys rather than global boolean flags to keep non-target list rows interactive while providing clear visual and screen-reader feedback for active operations.
+
+## 2026-09-29 - Preserving DOM Focus on Interactive Controls During Async Operations
+**Learning:** Replacing an interactive control (like a focused `<Switch>`) with a `<Spinner>` during async pending states unmounts the element from the DOM, causing browser focus to reset to `document.body` and forcing keyboard users to re-navigate the entire page.
+**Action:** Always keep focused controls mounted and set `disabled={loading}` while rendering the `<Spinner />` alongside or near the control, preserving DOM focus during async operations.
