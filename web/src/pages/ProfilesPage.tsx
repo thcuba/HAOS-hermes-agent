@@ -450,6 +450,8 @@ export default function ProfilesPage() {
                         size="icon"
                         title={t.profiles.editSoul}
                         aria-label={`${t.profiles.editSoul}: ${p.name}`}
+                        aria-expanded={isEditingSoul}
+                        aria-controls={`soul-editor-container-${p.name}`}
                         onClick={() => openSoulEditor(p.name)}
                       >
                         {isEditingSoul ? (
@@ -500,7 +502,10 @@ export default function ProfilesPage() {
               </CardContent>
 
               {isEditingSoul && (
-                <div className="border-t border-border px-4 pb-4 pt-3 flex flex-col gap-2">
+                <div
+                  id={`soul-editor-container-${p.name}`}
+                  className="border-t border-border px-4 pb-4 pt-3 flex flex-col gap-2"
+                >
                   <Label
                     htmlFor={`soul-editor-${p.name}`}
                     className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground"
