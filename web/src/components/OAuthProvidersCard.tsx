@@ -212,7 +212,7 @@ export function OAuthProvidersCard({ onError, onSuccess }: Props) {
                       className="inline-flex"
                       title={`Open ${p.name} docs`}
                     >
-                      <Button ghost size="icon" aria-label={`Open ${p.name} docs`}>
+                      <Button ghost size="icon" aria-label={`Open ${p.name} docs (opens in new tab)`}>
                         <ExternalLink />
                       </Button>
                     </a>
