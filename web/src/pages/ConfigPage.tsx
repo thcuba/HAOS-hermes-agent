@@ -490,7 +490,14 @@ export default function ConfigPage() {
               size="sm"
               onClick={handleYamlSave}
               disabled={yamlSaving}
-              prefix={<Save />}
+              aria-busy={yamlSaving}
+              prefix={
+                yamlSaving ? (
+                  <Spinner className="shrink-0 text-[0.875rem]" />
+                ) : (
+                  <Save />
+                )
+              }
             >
               {yamlSaving ? t.common.saving : t.common.save}
             </Button>
@@ -499,7 +506,14 @@ export default function ConfigPage() {
               size="sm"
               onClick={handleSave}
               disabled={saving}
-              prefix={<Save />}
+              aria-busy={saving}
+              prefix={
+                saving ? (
+                  <Spinner className="shrink-0 text-[0.875rem]" />
+                ) : (
+                  <Save />
+                )
+              }
             >
               {saving ? t.common.saving : t.common.save}
             </Button>
