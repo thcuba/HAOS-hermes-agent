@@ -26,6 +26,7 @@ export default function DocsPage() {
         href={HERMES_DOCS_URL}
         target="_blank"
         rel="noopener noreferrer"
+        aria-label={t.app.openDocumentation}
         className={DS_BUTTON_OUTLINED_LINK_CN}
       >
         <ExternalLink className="size-3.5" />
