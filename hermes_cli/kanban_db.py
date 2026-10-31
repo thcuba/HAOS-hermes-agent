@@ -1539,10 +1539,10 @@ def create_task(
                         session_id,
                     ),
                 )
-                for pid in parents:
-                    conn.execute(
+                if parents:
+                    conn.executemany(
                         "INSERT OR IGNORE INTO task_links (parent_id, child_id) VALUES (?, ?)",
-                        (pid, task_id),
+                        [(pid, task_id) for pid in parents],
                     )
                 _append_event(
                     conn,
@@ -3273,11 +3273,11 @@ def decompose_triage_task(
         # root waits for the whole graph. Simpler than computing leaves:
         # link root under every child. Cycle-free because the root is
         # only ever a child here, never a parent of children.
-        for cid in child_ids:
-            conn.execute(
+        if child_ids:
+            conn.executemany(
                 "INSERT OR IGNORE INTO task_links (parent_id, child_id) "
                 "VALUES (?, ?)",
-                (cid, task_id),
+                [(cid, task_id) for cid in child_ids],
             )
 
         # Flip the root: triage -> todo, set assignee to the orchestrator.
