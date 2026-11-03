@@ -191,7 +191,7 @@ acp = ["agent-client-protocol==0.9.0"]
 # excluded from [all] like honcho/hindsight so a quarantined upstream release
 # can't break fresh installs.
 supermemory = ["supermemory==3.50.0"]
-mem0 = ["mem0ai==2.0.10"]
+mem0 = ["mem0ai==2.0.18"]
 
 bedrock = ["boto3==1.42.89"]
 vertex = ["google-auth==2.55.1"]
